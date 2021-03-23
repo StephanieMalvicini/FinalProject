@@ -1,0 +1,2 @@
+def equalized_odds(satisfies_false_positive_error_rate_balance, satisfies_false_negative_error_rate_balance):
+    return satisfies_false_positive_error_rate_balance & satisfies_false_negative_error_rate_balance

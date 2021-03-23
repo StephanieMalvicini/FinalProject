@@ -1,0 +1,14 @@
+color,PredictedProbability,Outcome
+rojo,0.11,1
+rojo,0.15,1
+rojo,0.23,1
+rojo,0.01,1
+rojo,0.7,1
+rojo,0.99,1
+azul,0,0
+azul,1,0
+azul,0.5,0
+azul,0.0003,0
+azul,0.9,0
+azul,0.67,0
+azul,0.2,0
