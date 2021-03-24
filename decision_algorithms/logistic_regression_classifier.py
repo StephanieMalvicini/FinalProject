@@ -18,6 +18,6 @@ class LogisticRegressionClassifier(DecisionAlgorithm):
     def subjects_distance(self, subject1, subject2):
         raise NotImplementedError
 
-    def outputs_distance(self, output1, output2):
+    def outcomes_distance(self, output1, output2):
         raise NotImplementedError
 
