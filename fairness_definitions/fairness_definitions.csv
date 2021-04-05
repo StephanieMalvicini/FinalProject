@@ -1,0 +1,16 @@
+definition_name,display_name,outcome,predicted_outcome,predicted_probability,distances,maximum_acceptable_difference,confidence,error,minimum_samples_amount,legitimate_attributes_list,decimals
+balance_for_negative_class,Balance for negative class,required,required,required,,required,,,,,
+balance_for_positive_class,Balance for positive class,required,required,required,,required,,,,,
+causal_discrimination,Causal discrimination,,required,,,,required,required,required,,
+conditional_statistical_parity,Conditional statistical parity,required,required,,,required,,,,required,
+conditional_use_accuracy_equality,Conditional use accuracy equality,required,required,,,required,,,,,
+equalized_odds,Equalized odds,required,required,,,required,,,,,
+fairness_through_awareness,Fairness through awareness,,required,,required,,,,,,
+false_negative_error_rate_balance,False negative error rate balance,required,required,,,required,,,,,
+false_positive_error_rate_balance,False positive error rate balance,required,required,,,required,,,,,
+group_fairness,Group fairness,required,required,,,required,,,,,
+overall_accuracy_equality,Overall accuracy equality,required,required,,,required,,,,,
+predictive_parity,Predictive parity,required,required,,,required,,,,,
+test_fairness,Test fairness,required,,required,,required,,,,,required
+treatment_equality,Treatment equality,required,required,,,required,,,,,
+well_calibration,Well-calibration,required,,required,,,,,,,required

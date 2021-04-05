@@ -2,18 +2,20 @@ import copy
 import math
 
 
-def basic_metrics_calculator(testing_set, descriptions):
+def calculate_basic_metrics(testing_set, descriptions, outcome_handler):
     metrics = list()
     for _ in range(len(descriptions)):
         metrics.append({"FP": 0, "FN": 0, "TP": 0, "TN": 0})
     for i in range(len(testing_set)):
         description_index = description_individual_satisfies(testing_set.iloc[i], descriptions)
         if description_index >= 0:
-            if testing_set.iloc[i]["Outcome"] == 0 and testing_set.iloc[i]["PredictedOutcome"] == 0:
+            if testing_set.iloc[i]["Outcome"] == outcome_handler.negative_outcome and \
+                    testing_set.iloc[i]["PredictedOutcome"] == outcome_handler.negative_outcome:
                 metrics[description_index]["TN"] += 1
-            elif testing_set.iloc[i]["Outcome"] == 0:
+            elif testing_set.iloc[i]["Outcome"] == outcome_handler.negative_outcome:
                 metrics[description_index]["FP"] += 1
-            elif testing_set.iloc[i]["Outcome"] == 1 and testing_set.iloc[i]["PredictedOutcome"] == 1:
+            elif testing_set.iloc[i]["Outcome"] == outcome_handler.positive_outcome and \
+                    testing_set.iloc[i]["PredictedOutcome"] == outcome_handler.positive_outcome:
                 metrics[description_index]["TP"] += 1
             else:
                 metrics[description_index]["FN"] += 1
@@ -34,7 +36,7 @@ def description_individual_satisfies(individual, descriptions):
     return index
 
 
-def probability_tables_calculator(testing_set, descriptions, decimals):
+def create_positives_negatives_tables(testing_set, descriptions, decimals, outcome_handler):
     descriptions_amount = len(descriptions)
     positives_table = list()
     negatives_table = list()
@@ -48,7 +50,7 @@ def probability_tables_calculator(testing_set, descriptions, decimals):
         if description_index >= 0:
             probability = individual["PredictedProbability"]
             s = round(probability, decimals)
-            if individual["Outcome"] == 1:
+            if individual["Outcome"] == outcome_handler.positive_outcome:
                 positives_table[description_index][str(s)] += 1
             else:
                 negatives_table[description_index][str(s)] += 1
@@ -58,6 +60,23 @@ def probability_tables_calculator(testing_set, descriptions, decimals):
 def create_probabilities_range(decimals):
     probabilities_range = {}
     last = int(math.pow(10, decimals))
-    for s in range(0, last+1):
-        probabilities_range[str(s/last)] = 0
+    for s in range(0, last + 1):
+        probabilities_range[str(s / last)] = 0
     return probabilities_range
+
+
+def create_probabilities_table(positives_table, negatives_table, decimals):
+    subgroups_amount = len(positives_table)
+    probabilities_values = positives_table[0].keys()
+    probabilities_table = list()
+    probabilities_range = create_probabilities_range(decimals)
+    for _ in range(subgroups_amount):
+        probabilities_table.append(copy.deepcopy(probabilities_range))
+    for s in probabilities_values:
+        for i in range(subgroups_amount):
+            if positives_table[i][s] + negatives_table[i][s] > 0:
+                probability = positives_table[i][s] / (positives_table[i][s] + negatives_table[i][s])
+            else:
+                probability = 0
+            probabilities_table[i][s] = probability
+    return probabilities_table

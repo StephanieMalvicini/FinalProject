@@ -2,12 +2,17 @@ import copy
 import math
 import pandas as pd
 import warnings
+
+
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 conf_zValue = {80: 1.28, 90: 1.645, 95: 1.96, 98: 2.33, 99: 2.58}
 
 
-def causal_discrimination(testing_set, descriptions, confidence, error, minimum_samples_amount, decision_algorithm):
+def causal_discrimination(attributes_test, descriptions, confidence, error, minimum_samples_amount, prediction_handler):
+    testing_set = copy.deepcopy(attributes_test)
+    delete_column(testing_set, "Outcome")
+    delete_column(testing_set, "PredictedProbability")
     fails_amount = 0
     test_suite = pd.DataFrame()
     samples_amount = 0
@@ -20,13 +25,9 @@ def causal_discrimination(testing_set, descriptions, confidence, error, minimum_
             for description in descriptions:
                 similar_individual = create_similar_individual(individual, description)
                 if not similar_individual.equals(individual):
-                    del similar_individual["PredictedOutcome"]
-                    # subject = [int(i) for i in similar_individual.values()]
-                    # print("ACAAAAAAAAAA", subject, "AAAAAAAAAAA")
-                    # similar_individual["PredictedOutcome"] = decision_algorithm.predict_outcome([tuple(subject)])
-                    similar_individual["PredictedOutcome"] = decision_algorithm.predict_outcome(pd.DataFrame().append(similar_individual))[0]
-                    # similar_individual["PredictedOutcome"] = decision_algorithm.predict_outcome([
-                    # similar_individual])[0]
+                    delete_column(similar_individual, "PredictedOutcome")
+                    similar_individual["PredictedOutcome"] = \
+                        prediction_handler.get_predicted_outcome(similar_individual)
                     test_suite = test_suite.append(similar_individual, ignore_index=True)
                     if similar_individual["PredictedOutcome"] != individual["PredictedOutcome"]:
                         fails = True
@@ -40,7 +41,7 @@ def causal_discrimination(testing_set, descriptions, confidence, error, minimum_
     print(test_suite.to_string())
     print("fails_amount: ", fails_amount)
     print("samples_amount: ", samples_amount)
-    return fails_amount / samples_amount # por si nunca llega a tener mas ejemplos de los requeridos
+    return fails_amount / samples_amount
 
 
 def create_similar_individual(individual, description) -> object:
@@ -48,3 +49,10 @@ def create_similar_individual(individual, description) -> object:
     for attribute in description.keys():
         similar_individual[attribute] = description[attribute]
     return similar_individual
+
+
+def delete_column(dataset, column_name):
+    try:
+        del dataset[column_name]
+    except KeyError:
+        pass
