@@ -41,6 +41,8 @@ class DatasetHandler:
 
     def get_attributes_values(self):
         attributes_names = self.__dataset.columns
+        if self.has_outcome():
+            attributes_names.drop(self.outcome_name)
         attributes_values = dict()
         for attribute in attributes_names:
             attributes_values[attribute] = self.__dataset[attribute].unique()
@@ -48,3 +50,6 @@ class DatasetHandler:
 
     def has_outcome(self):
         return self.outcome_name != ""
+
+    def get_testing_dataset_samples_amount(self):
+        return len(self.__attributes_test)

@@ -111,11 +111,15 @@ class DatasetParameters:
         return continue_button
 
     def continue_button_selected(self):
+        filename = self.outcome_handler.filename
+        outcome_name = self.outcome_handler.outcome_name
+        test_size = int(self.test_size_spinbox.get())/100
         self.filename_button.config(state='disabled')
         self.outcome_name_combobox.config(state='disabled')
         self.positive_outcome_combobox.config(state='disabled')
         self.test_size_spinbox.config(state='disabled')
-        self.gui.dataset_parameters_continue_button_pressed()
+        self.continue_button.config(state='disabled')
+        self.gui.dataset_parameters_continue(filename, outcome_name, test_size)
 
 
 

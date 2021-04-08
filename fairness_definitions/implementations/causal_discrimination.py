@@ -3,10 +3,9 @@ import math
 import pandas as pd
 import warnings
 
+import statistical_constants
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
-
-conf_zValue = {80: 1.28, 90: 1.645, 95: 1.96, 98: 2.33, 99: 2.58}
 
 
 def causal_discrimination(attributes_test, descriptions, confidence, error, minimum_samples_amount, prediction_handler):
@@ -35,7 +34,8 @@ def causal_discrimination(attributes_test, descriptions, confidence, error, mini
                 fails_amount += 1
             if samples_amount > minimum_samples_amount:
                 p = fails_amount / samples_amount
-                current_error = conf_zValue[int(100 * confidence)] * math.sqrt(p * (1 - p) * 1.0 / samples_amount)
+                current_error = statistical_constants.CONFIDENCE_Z_VALUES[int(confidence)] * math.sqrt(
+                    p * (1 - p) * 1.0 / samples_amount)
                 if current_error < error:
                     break
     print(test_suite.to_string())

@@ -1,6 +1,8 @@
 import tkinter as tk
+
+from dataset_handler import DatasetHandler
 from user_interface.dataset_parameters import DatasetParameters
-from user_interface.fairness_definitions import FairnessDefinitions
+from user_interface.fairness_definitions_parameters import FairnessDefinitionsParameters
 
 
 class GUI:
@@ -14,9 +16,10 @@ class GUI:
 
         self.fairness_definitions_frame = tk.Frame(self.window)
         self.fairness_definitions_frame.grid(column=0, row=1)
-        self.fairness_definitions_frame = FairnessDefinitions(self.fairness_definitions_frame)
+        self.fairness_definitions_frame = FairnessDefinitionsParameters(self.fairness_definitions_frame)
 
         self.window.mainloop()
 
-    def dataset_parameters_continue_button_pressed(self):
-        self.fairness_definitions_frame.show()
+    def dataset_parameters_continue(self, filename, outcome_name, test_size):
+        dataset_handler = DatasetHandler(filename, outcome_name, test_size)
+        self.fairness_definitions_frame.show(dataset_handler)
