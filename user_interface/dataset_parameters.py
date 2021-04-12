@@ -1,4 +1,3 @@
-import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
 
@@ -19,20 +18,21 @@ class DatasetParameters:
         self.outcome_name_combobox = self.create_outcome_name_combobox()
         self.positive_outcome_combobox = self.create_positive_outcome_combobox()
         self.test_size_spinbox = self.create_test_size_spinbox()
-        self.continue_button = self.create_continue_button()
+        self.confirm_button = self.create_confirm_button()
 
     def create_file_selector(self):
-        filename_label = tk.Label(self.frame, text="Dataset: ")
+        filename_label = ttk.Label(self.frame, text="Archivo: ")
         filename_label.grid(column=0, row=0)
-        filename_text = tk.StringVar()
+        filename_text = ttk.StringVar()
         filename_entry = ttk.Entry(self.frame, width=25, state="readonly", textvariable=filename_text)
         filename_entry.grid(column=1, row=0)
-        filename_select_button = tk.Button(self.frame, text="Seleccionar", command=self.open_filename_selector)
+        filename_select_button = ttk.Button(self.frame, text="Seleccionar", command=self.open_filename_selector)
         filename_select_button.grid(column=2, row=0)
         return filename_text, filename_entry, filename_select_button
 
     def open_filename_selector(self):
-        filename = filedialog.askopenfilename(title="Seleccionar archivo dataset", filetypes=(("CSV Files", "*.csv"),))
+        filename = filedialog.askopenfilename(title="Seleccionar archivo conjuto de datos",
+                                              filetypes=(("CSV Files", "*.csv"),))
         if filename:
             self.outcome_handler.update_filename(filename)
             self.frame.filename = filename
@@ -40,10 +40,10 @@ class DatasetParameters:
             self.filename_entry.after(100, self.filename_entry.xview_moveto, 1)
             self.update_outcome_name_combobox()
             self.disable_positive_outcome_combobox()
-            self.continue_button.config(state='normal')
+            self.confirm_button.config(state='normal')
 
     def create_outcome_name_combobox(self):
-        outcome_name_label = tk.Label(self.frame, text="Salida: ")
+        outcome_name_label = ttk.Label(self.frame, text="Salida: ")
         outcome_name_label.grid(column=3, row=0)
         outcome_name_combobox = ttk.Combobox(self.frame, state="readonly")
         outcome_name_combobox.config(state='disabled')
@@ -70,7 +70,7 @@ class DatasetParameters:
         self.outcome_handler.set_outcome_name(NO_OUTCOME_VALUE)
 
     def create_positive_outcome_combobox(self):
-        positive_outcome_label = tk.Label(self.frame, text="Positiva: ")
+        positive_outcome_label = ttk.Label(self.frame, text="Positiva: ")
         positive_outcome_label.grid(column=5, row=0)
         positive_outcome_combobox = ttk.Combobox(self.frame, state="readonly")
         positive_outcome_combobox.config(state='disabled')
@@ -94,32 +94,29 @@ class DatasetParameters:
         self.outcome_handler.set_outcome_values(None)
 
     def create_test_size_spinbox(self):
-        test_size_label = tk.Label(self.frame, text="Tamaño conjunto de pruebas (%): ")
+        test_size_label = ttk.Label(self.frame, text="Tamaño conjunto de pruebas: ")
         test_size_label.grid(column=7, row=0)
-        test_size_text = tk.StringVar()
+        test_size_text = ttk.StringVar()
         test_size_text.set(TEST_SIZE_DEFAULT)
         validation_command = (self.frame.register(input_validator.validate_test_size))
-        test_size_spinbox = tk.Spinbox(self.frame, from_=1, to=100, textvariable=test_size_text, width=3)
+        test_size_spinbox = ttk.Spinbox(self.frame, from_=1, to=100, textvariable=test_size_text, width=3)
         test_size_spinbox.config(validate="key", validatecommand=(validation_command, '%P'))
         test_size_spinbox.grid(column=8, row=0)
+        percentage_label = ttk.Label(self.frame, text="%")
+        percentage_label.grid(column=9, row=0)
         return test_size_spinbox
 
-    def create_continue_button(self):
-        continue_button = tk.Button(self.frame, text="Continuar", command=self.continue_button_selected)
-        continue_button.grid(column=9, row=0)
-        continue_button.config(state='disabled')
-        return continue_button
+    def create_confirm_button(self):
+        confirm_button = ttk.Button(self.frame, text="Confirmar", command=self.dataset_parameters_confirmed)
+        confirm_button.config(state="disabled")
+        confirm_button.grid(column=10, row=0)
+        return confirm_button
 
-    def continue_button_selected(self):
+    def dataset_parameters_confirmed(self):
         filename = self.outcome_handler.filename
         outcome_name = self.outcome_handler.outcome_name
         test_size = int(self.test_size_spinbox.get())/100
-        self.filename_button.config(state='disabled')
-        self.outcome_name_combobox.config(state='disabled')
-        self.positive_outcome_combobox.config(state='disabled')
-        self.test_size_spinbox.config(state='disabled')
-        self.continue_button.config(state='disabled')
-        self.gui.dataset_parameters_continue(filename, outcome_name, test_size)
+        self.gui.dataset_parameters_confirmed(filename, outcome_name, test_size)
 
 
 
