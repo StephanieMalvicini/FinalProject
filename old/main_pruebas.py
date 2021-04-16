@@ -1,8 +1,8 @@
-from dataset_handler import DatasetHandler
+from handlers.dataset_handler import DatasetHandler
 from decision_algorithms.creator import Creator
 from fairness_definitions.fairness_definitions_calculator import FairnessDefinitionsCalculator
-from descriptions_calculator import get_descriptions
-from prediction_handler import PredictionHandler
+from handlers.descriptions_calculator import get_descriptions
+from handlers.prediction_handler import PredictionHandler
 
 filename = "../datasets/germandata-gender.csv"
 outcome_name = "credit_score"

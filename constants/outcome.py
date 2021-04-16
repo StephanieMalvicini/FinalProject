@@ -1,0 +1,1 @@
+NO_OUTCOME_VALUE = ""

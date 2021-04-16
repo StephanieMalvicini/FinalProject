@@ -1,18 +1,19 @@
+import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
 
-import input_validator
+from constants.outcome import NO_OUTCOME_VALUE
+from handlers import input_validator
 
 NO_OUTCOME_DISPLAY_NAME = "Sin salida"
-NO_OUTCOME_VALUE = ""
 TEST_SIZE_DEFAULT = "25"
 
 
 class DatasetParameters:
-    def __init__(self, frame, outcome_handler, gui):
+    def __init__(self, frame, outcome_handler, confirmed_callback):
         self.frame = frame
         self.outcome_handler = outcome_handler
-        self.gui = gui
+        self.confirmed_callback = confirmed_callback
 
         self.filename_text, self.filename_entry, self.filename_button = self.create_file_selector()
         self.outcome_name_combobox = self.create_outcome_name_combobox()
@@ -23,7 +24,7 @@ class DatasetParameters:
     def create_file_selector(self):
         filename_label = ttk.Label(self.frame, text="Archivo: ")
         filename_label.grid(column=0, row=0)
-        filename_text = ttk.StringVar()
+        filename_text = tk.StringVar()
         filename_entry = ttk.Entry(self.frame, width=25, state="readonly", textvariable=filename_text)
         filename_entry.grid(column=1, row=0)
         filename_select_button = ttk.Button(self.frame, text="Seleccionar", command=self.open_filename_selector)
@@ -40,7 +41,7 @@ class DatasetParameters:
             self.filename_entry.after(100, self.filename_entry.xview_moveto, 1)
             self.update_outcome_name_combobox()
             self.disable_positive_outcome_combobox()
-            self.confirm_button.config(state='normal')
+            self.confirm_button.config(state="normal")
 
     def create_outcome_name_combobox(self):
         outcome_name_label = ttk.Label(self.frame, text="Salida: ")
@@ -66,7 +67,7 @@ class DatasetParameters:
         columns_values.insert(0, NO_OUTCOME_DISPLAY_NAME)
         self.outcome_name_combobox["values"] = columns_values
         self.outcome_name_combobox.current(0)
-        self.outcome_name_combobox.config(state='enabled')
+        self.outcome_name_combobox.config(state="readonly")
         self.outcome_handler.set_outcome_name(NO_OUTCOME_VALUE)
 
     def create_positive_outcome_combobox(self):
@@ -85,21 +86,20 @@ class DatasetParameters:
         outcome_values = self.outcome_handler.get_outcome_values()
         self.positive_outcome_combobox["values"] = outcome_values
         self.positive_outcome_combobox.current(0)
-        self.positive_outcome_combobox.config(state='enabled')
+        self.positive_outcome_combobox.config(state="readonly")
         self.outcome_handler.set_outcome_values(self.positive_outcome_combobox.get())
 
     def disable_positive_outcome_combobox(self):
         self.positive_outcome_combobox.set("")
-        self.positive_outcome_combobox.config(state='disabled')
+        self.positive_outcome_combobox.config(state="disabled")
         self.outcome_handler.set_outcome_values(None)
 
     def create_test_size_spinbox(self):
         test_size_label = ttk.Label(self.frame, text="Tamaño conjunto de pruebas: ")
         test_size_label.grid(column=7, row=0)
-        test_size_text = ttk.StringVar()
-        test_size_text.set(TEST_SIZE_DEFAULT)
         validation_command = (self.frame.register(input_validator.validate_test_size))
-        test_size_spinbox = ttk.Spinbox(self.frame, from_=1, to=100, textvariable=test_size_text, width=3)
+        test_size_spinbox = ttk.Spinbox(self.frame, from_=1, to=100, width=3)
+        test_size_spinbox.set(TEST_SIZE_DEFAULT)
         test_size_spinbox.config(validate="key", validatecommand=(validation_command, '%P'))
         test_size_spinbox.grid(column=8, row=0)
         percentage_label = ttk.Label(self.frame, text="%")
@@ -109,14 +109,17 @@ class DatasetParameters:
     def create_confirm_button(self):
         confirm_button = ttk.Button(self.frame, text="Confirmar", command=self.dataset_parameters_confirmed)
         confirm_button.config(state="disabled")
-        confirm_button.grid(column=10, row=0)
+        confirm_button.grid(column=12, row=0)
         return confirm_button
 
     def dataset_parameters_confirmed(self):
         filename = self.outcome_handler.filename
-        outcome_name = self.outcome_handler.outcome_name
+        if self.outcome_handler.outcome_name == NO_OUTCOME_DISPLAY_NAME:
+            outcome_name = NO_OUTCOME_VALUE
+        else:
+            outcome_name = self.outcome_handler.outcome_name
         test_size = int(self.test_size_spinbox.get())/100
-        self.gui.dataset_parameters_confirmed(filename, outcome_name, test_size)
+        self.confirmed_callback(filename, outcome_name, test_size)
 
 
 

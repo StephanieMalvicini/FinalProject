@@ -1,0 +1,4 @@
+display_name,class_name,file_name
+Fair classifier,FairClassifier,fair_classifier
+Bias classifier,BiasClassifier,bias_classifier
+Logistic Regression,LogisticRegressionClassifier,logistic_regression_classifier

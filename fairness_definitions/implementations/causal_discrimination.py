@@ -3,7 +3,7 @@ import math
 import pandas as pd
 import warnings
 
-import statistical_constants
+from constants import statistical_constants
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
