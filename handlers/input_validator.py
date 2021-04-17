@@ -17,6 +17,8 @@ def validate_float(str_value, decimals):
 
 
 def validate_test_size(str_value):
+    if len(str_value) == 0:
+        return True
     return validate_int(str_value, 1, 100)
 
 
@@ -37,6 +39,8 @@ def validate_decimals(str_value):
 
 
 def validate_attribute_value_numeric(str_value):
+    if len(str_value) == 0:
+        return True
     try:
         int(str_value)
         return True

@@ -1,4 +1,4 @@
-from fairness_definitions.implementations.discrimination_basics import create_probabilities_range
+from fairness_definitions.discrimination_basics import create_probabilities_range
 
 
 def test_fairness(probabilities_table, maximum_acceptable_difference, decimals):

@@ -1,5 +1,5 @@
-from fairness_definitions.implementations.discrimination_basics import calculate_basic_metrics
-from fairness_definitions.implementations.group_fairness import group_fairness
+from fairness_definitions.discrimination_basics import calculate_basic_metrics
+from fairness_definitions.group_fairness import group_fairness
 
 
 def conditional_statistical_parity(testing_set, legitimate_attributes_list, descriptions, maximum_acceptable_difference):

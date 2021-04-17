@@ -4,22 +4,41 @@ from tkinter import filedialog
 
 from constants.outcome import NO_OUTCOME_VALUE
 from handlers import input_validator
+from handlers.decision_algorithm_handler import DecisionAlgorithmHandler
+from handlers.outcome_handler import OutcomeHandler
 
 NO_OUTCOME_DISPLAY_NAME = "Sin salida"
 TEST_SIZE_DEFAULT = "25"
+ERROR_TITLE = "Tamaño del conjunto de pruebas no especificado"
+ERROR_DETAIL = "Por favor indique el porcentaje del conjunto de datos a utilizar para el conjunto de pruebas"
+
+
+class DatasetParametersContainer:
+
+    def __init__(self, main_frame, width, confirmed_callback, dialog):
+        self.outcome_handler = OutcomeHandler()
+        self.frame = \
+            ttk.LabelFrame(main_frame, text="  Conjunto de datos y clasificador/algoritmo de decisión ", width=width)
+        self.decision_algorithm_handler = DecisionAlgorithmHandler()
+        self.dataset_parameters = DatasetParameters(self.frame, self.outcome_handler,
+                                                    self.decision_algorithm_handler.get_decision_algorithms_names(),
+                                                    confirmed_callback, dialog)
 
 
 class DatasetParameters:
-    def __init__(self, frame, outcome_handler, confirmed_callback):
-        self.frame = frame
+
+    def __init__(self, frame, outcome_handler, decision_algorithms, confirmed_callback, dialog):
+        self.frame = ttk.Frame(frame)
+        self.frame.pack(side=tk.LEFT)
         self.outcome_handler = outcome_handler
         self.confirmed_callback = confirmed_callback
-
+        self.dialog = dialog
         self.filename_text, self.filename_entry, self.filename_button = self.create_file_selector()
         self.outcome_name_combobox = self.create_outcome_name_combobox()
         self.positive_outcome_combobox = self.create_positive_outcome_combobox()
         self.test_size_spinbox = self.create_test_size_spinbox()
-        self.confirm_button = self.create_confirm_button()
+        self.decision_algorithm_combobox = self.create_decision_algorithm_combobox(decision_algorithms)
+        self.confirm_button = self.create_confirm_button(frame)
 
     def create_file_selector(self):
         filename_label = ttk.Label(self.frame, text="Archivo: ")
@@ -46,7 +65,7 @@ class DatasetParameters:
     def create_outcome_name_combobox(self):
         outcome_name_label = ttk.Label(self.frame, text="Salida: ")
         outcome_name_label.grid(column=3, row=0)
-        outcome_name_combobox = ttk.Combobox(self.frame, state="readonly")
+        outcome_name_combobox = ttk.Combobox(self.frame, state="readonly", justify="center")
         outcome_name_combobox.config(state='disabled')
         outcome_name_combobox.grid(column=4, row=0)
         outcome_name_combobox.bind("<<ComboboxSelected>>", self.outcome_name_selected)
@@ -73,7 +92,7 @@ class DatasetParameters:
     def create_positive_outcome_combobox(self):
         positive_outcome_label = ttk.Label(self.frame, text="Positiva: ")
         positive_outcome_label.grid(column=5, row=0)
-        positive_outcome_combobox = ttk.Combobox(self.frame, state="readonly")
+        positive_outcome_combobox = ttk.Combobox(self.frame, state="readonly", width=5, justify="center")
         positive_outcome_combobox.config(state='disabled')
         positive_outcome_combobox.grid(column=6, row=0)
         positive_outcome_combobox.bind("<<ComboboxSelected>>", self.positive_outcome_selected)
@@ -106,20 +125,35 @@ class DatasetParameters:
         percentage_label.grid(column=9, row=0)
         return test_size_spinbox
 
-    def create_confirm_button(self):
-        confirm_button = ttk.Button(self.frame, text="Confirmar", command=self.dataset_parameters_confirmed)
+    def create_decision_algorithm_combobox(self, decision_algorithms):
+        decision_algorithms.sort()
+        decision_algorithm_name_label = ttk.Label(self.frame, text="Nombre: ")
+        decision_algorithm_name_label.grid(column=10, row=0)
+        decision_algorithm_combobox = \
+            ttk.Combobox(self.frame, state="readonly", values=decision_algorithms, justify="center")
+        decision_algorithm_combobox.current(0)
+        decision_algorithm_combobox.grid(column=11, row=0)
+        return decision_algorithm_combobox
+
+    def create_confirm_button(self, frame):
+        confirm_button = ttk.Button(frame, text="Confirmar", command=self.dataset_parameters_confirmed)
         confirm_button.config(state="disabled")
-        confirm_button.grid(column=12, row=0)
+        confirm_button.pack(side=tk.RIGHT)
         return confirm_button
 
     def dataset_parameters_confirmed(self):
-        filename = self.outcome_handler.filename
-        if self.outcome_handler.outcome_name == NO_OUTCOME_DISPLAY_NAME:
-            outcome_name = NO_OUTCOME_VALUE
+        test_size = self.test_size_spinbox.get()
+        if len(test_size) == 0:
+            self.dialog.show_error_with_details(ERROR_TITLE, ERROR_DETAIL)
         else:
-            outcome_name = self.outcome_handler.outcome_name
-        test_size = int(self.test_size_spinbox.get())/100
-        self.confirmed_callback(filename, outcome_name, test_size)
+            filename = self.outcome_handler.filename
+            if self.outcome_handler.outcome_name == NO_OUTCOME_DISPLAY_NAME:
+                outcome_name = NO_OUTCOME_VALUE
+            else:
+                outcome_name = self.outcome_handler.outcome_name
+            test_size = int(test_size)/100
+            decision_algorithm_name = self.decision_algorithm_combobox.get()
+            self.confirmed_callback(filename, outcome_name, test_size, decision_algorithm_name)
 
 
 

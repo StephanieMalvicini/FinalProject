@@ -11,21 +11,42 @@ MINIMUM_SAMPLES_AMOUNT_DEFAULT = 1
 DECIMALS_DEFAULT = 0
 
 
+class FairnessDefinitionsParametersContainer:
+
+    def __init__(self, main_frame, width, dialog):
+        self.frame = \
+            ttk.LabelFrame(main_frame, text="  Definiciones de fairness - parámetros  ", height=200, width=width)
+        self.fairness_definitions_parameters = None
+        self.dialog = dialog
+
+    def update(self, dataset_handler, fairness_definitions_parameters_handler):
+        if self.fairness_definitions_parameters:
+            self.fairness_definitions_parameters.destroy()
+        self.fairness_definitions_parameters = \
+            FairnessDefinitionsParameters(self.frame,
+                                          dataset_handler.get_testing_dataset_samples_amount(),
+                                          dataset_handler.get_attributes_values(),
+                                          fairness_definitions_parameters_handler.get_required_parameters_names(),
+                                          self.dialog)
+
+
 class FairnessDefinitionsParameters:
 
-    def __init__(self, parent_frame, dataset_handler, required_parameters_names):
+    def __init__(self, parent_frame, max_samples, attributes_values, required_parameters_names, dialog):
         self.frame = ttk.Frame(parent_frame)
-        self.frame.grid(columnspan=11, column=0, row=0, sticky=tk.NW)
-        self.dataset_handler = dataset_handler
+        self.frame.pack(side=tk.TOP)
         self.required_parameters_names = required_parameters_names
         self.maximum_acceptable_difference_spinbox = self.create_maximum_acceptable_difference_spinbox()
         self.confidence_combobox = self.create_confidence_combobox()
         self.error_spinbox = self.create_error_spinbox()
-        self.minimum_samples_amount_spinbox = self.create_minimum_samples_amount_spinbox()
+        self.minimum_samples_amount_spinbox = self.create_minimum_samples_amount_spinbox(max_samples)
         self.decimals_spinbox = self.create_decimals_spinbox()
-        self.legitimate_attributes_list = \
-            LegitimateAttributesList(parent_frame, 1, dataset_handler.get_attributes_values(),
-                                     "legitimate_attributes_list" in required_parameters_names)
+        legitimate_attributes_required = "legitimate_attributes_list" in required_parameters_names
+        self.legitimate_attributes_list_frame = ttk.Frame(parent_frame)
+        self.legitimate_attributes_list_frame.pack(side=tk.LEFT)
+        self.legitimate_attributes_list = LegitimateAttributesList(self.legitimate_attributes_list_frame, 1,
+                                                                   attributes_values,
+                                                                   legitimate_attributes_required, dialog)
 
     def create_maximum_acceptable_difference_spinbox(self):
         maximum_acceptable_difference_label = ttk.Label(self.frame, text="Diferencia aceptable: ")
@@ -64,10 +85,9 @@ class FairnessDefinitionsParameters:
             error_spinbox.config(state="disabled")
         return error_spinbox
 
-    def create_minimum_samples_amount_spinbox(self):
+    def create_minimum_samples_amount_spinbox(self, max_samples):
         minimum_samples_amount_label = ttk.Label(self.frame, text="Mínima cantidad de pruebas: ")
         minimum_samples_amount_label.grid(column=8, row=0)
-        max_samples = self.dataset_handler.get_testing_dataset_samples_amount()
         validation_command = (self.frame.register(input_validator.validate_minimum_samples_amount))
         minimum_samples_amount_spinbox = ttk.Spinbox(self.frame, from_=1, to=max_samples, width=6)
         minimum_samples_amount_spinbox.set(MINIMUM_SAMPLES_AMOUNT_DEFAULT)
@@ -88,3 +108,7 @@ class FairnessDefinitionsParameters:
         if "decimals" not in self.required_parameters_names:
             decimals_spinbox.config(state="disabled")
         return decimals_spinbox
+
+    def destroy(self):
+        self.frame.destroy()
+        self.legitimate_attributes_list_frame.destroy()

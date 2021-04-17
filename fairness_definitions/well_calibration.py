@@ -1,4 +1,4 @@
-from fairness_definitions.implementations.discrimination_basics import create_probabilities_range
+from fairness_definitions.discrimination_basics import create_probabilities_range
 
 
 def well_calibration(probabilities_table, decimals):

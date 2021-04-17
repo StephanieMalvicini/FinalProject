@@ -1,6 +1,6 @@
 from handlers.dataset_handler import DatasetHandler
 from decision_algorithms.creator import Creator
-from fairness_definitions.fairness_definitions_calculator import FairnessDefinitionsCalculator
+from handlers.fairness_definitions_calculator import FairnessDefinitionsCalculator
 from handlers.descriptions_calculator import get_descriptions
 from handlers.prediction_handler import PredictionHandler
 

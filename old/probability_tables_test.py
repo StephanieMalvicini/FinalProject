@@ -1,10 +1,10 @@
 import pandas as pd
 
-from fairness_definitions.implementations.discrimination_basics import \
+from fairness_definitions.discrimination_basics import \
     create_probabilities_range, create_positives_negatives_tables, create_probabilities_table
 
-from fairness_definitions.implementations.well_calibration import well_calibration
-from fairness_definitions.implementations.test_fairness import test_fairness
+from fairness_definitions.well_calibration import well_calibration
+from fairness_definitions.test_fairness import test_fairness
 
 data_set_file_name = "test - dataset2.csv"
 data_set = pd.read_csv(data_set_file_name, header=0)
