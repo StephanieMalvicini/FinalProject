@@ -31,7 +31,9 @@ def validate_error(str_value):
 
 
 def validate_minimum_samples_amount(str_value, max_amount):
-    return validate_int(str_value, 1, max_amount)
+    if len(str_value) == 0:
+        return True
+    return validate_int(str_value, 1, int(max_amount))
 
 
 def validate_decimals(str_value):

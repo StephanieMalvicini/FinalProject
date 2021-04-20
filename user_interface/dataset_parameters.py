@@ -41,14 +41,14 @@ class DatasetParameters:
         self.confirm_button = self.create_confirm_button(frame)
 
     def create_file_selector(self):
-        filename_label = ttk.Label(self.frame, text="Archivo: ")
-        filename_label.grid(column=0, row=0)
-        filename_text = tk.StringVar()
-        filename_entry = ttk.Entry(self.frame, width=25, state="readonly", textvariable=filename_text)
-        filename_entry.grid(column=1, row=0)
-        filename_select_button = ttk.Button(self.frame, text="Seleccionar", command=self.open_filename_selector)
-        filename_select_button.grid(column=2, row=0)
-        return filename_text, filename_entry, filename_select_button
+        label = ttk.Label(self.frame, text="Archivo: ")
+        label.grid(column=0, row=0)
+        text = tk.StringVar()
+        entry = ttk.Entry(self.frame, width=25, state="readonly", textvariable=text)
+        entry.grid(column=1, row=0)
+        button = ttk.Button(self.frame, text="Seleccionar", command=self.open_filename_selector)
+        button.grid(column=2, row=0)
+        return text, entry, button
 
     def open_filename_selector(self):
         filename = filedialog.askopenfilename(title="Seleccionar archivo conjuto de datos",
@@ -63,13 +63,47 @@ class DatasetParameters:
             self.confirm_button.config(state="normal")
 
     def create_outcome_name_combobox(self):
-        outcome_name_label = ttk.Label(self.frame, text="Salida: ")
-        outcome_name_label.grid(column=3, row=0)
-        outcome_name_combobox = ttk.Combobox(self.frame, state="readonly", justify="center")
-        outcome_name_combobox.config(state='disabled')
-        outcome_name_combobox.grid(column=4, row=0)
-        outcome_name_combobox.bind("<<ComboboxSelected>>", self.outcome_name_selected)
-        return outcome_name_combobox
+        label = ttk.Label(self.frame, text="Salida: ")
+        label.grid(column=3, row=0)
+        combobox = ttk.Combobox(self.frame, state="disabled", justify="center")
+        combobox.grid(column=4, row=0)
+        combobox.bind("<<ComboboxSelected>>", self.outcome_name_selected)
+        return combobox
+
+    def create_positive_outcome_combobox(self):
+        label = ttk.Label(self.frame, text="Positiva: ")
+        label.grid(column=5, row=0)
+        combobox = ttk.Combobox(self.frame, state="disabled", width=5, justify="center")
+        combobox.grid(column=6, row=0)
+        combobox.bind("<<ComboboxSelected>>", self.positive_outcome_selected)
+        return combobox
+
+    def create_test_size_spinbox(self):
+        label = ttk.Label(self.frame, text="Tamaño conjunto de pruebas: ")
+        label.grid(column=7, row=0)
+        validation_command = (self.frame.register(input_validator.validate_test_size))
+        spinbox = ttk.Spinbox(self.frame, from_=1, to=100, width=3, validate="key",
+                              validatecommand=(validation_command, '%P'))
+        spinbox.set(TEST_SIZE_DEFAULT)
+        spinbox.grid(column=8, row=0)
+        percentage_label = ttk.Label(self.frame, text="%")
+        percentage_label.grid(column=9, row=0)
+        return spinbox
+
+    def create_decision_algorithm_combobox(self, decision_algorithms):
+        decision_algorithms.sort()
+        label = ttk.Label(self.frame, text="Nombre: ")
+        label.grid(column=10, row=0)
+        combobox = ttk.Combobox(self.frame, state="readonly", values=decision_algorithms, justify="center")
+        combobox.current(0)
+        combobox.grid(column=11, row=0)
+        return combobox
+
+    def create_confirm_button(self, frame):
+        button = ttk.Button(frame, text="Confirmar", command=self.dataset_parameters_confirmed)
+        button.config(state="disabled")
+        button.pack(side=tk.RIGHT)
+        return button
 
     def outcome_name_selected(self, *args):
         outcome_name = self.outcome_name_combobox.get()
@@ -89,15 +123,6 @@ class DatasetParameters:
         self.outcome_name_combobox.config(state="readonly")
         self.outcome_handler.set_outcome_name(NO_OUTCOME_VALUE)
 
-    def create_positive_outcome_combobox(self):
-        positive_outcome_label = ttk.Label(self.frame, text="Positiva: ")
-        positive_outcome_label.grid(column=5, row=0)
-        positive_outcome_combobox = ttk.Combobox(self.frame, state="readonly", width=5, justify="center")
-        positive_outcome_combobox.config(state='disabled')
-        positive_outcome_combobox.grid(column=6, row=0)
-        positive_outcome_combobox.bind("<<ComboboxSelected>>", self.positive_outcome_selected)
-        return positive_outcome_combobox
-
     def positive_outcome_selected(self, *args):
         self.outcome_handler.set_outcome_values(self.positive_outcome_combobox.get())
 
@@ -112,34 +137,6 @@ class DatasetParameters:
         self.positive_outcome_combobox.set("")
         self.positive_outcome_combobox.config(state="disabled")
         self.outcome_handler.set_outcome_values(None)
-
-    def create_test_size_spinbox(self):
-        test_size_label = ttk.Label(self.frame, text="Tamaño conjunto de pruebas: ")
-        test_size_label.grid(column=7, row=0)
-        validation_command = (self.frame.register(input_validator.validate_test_size))
-        test_size_spinbox = ttk.Spinbox(self.frame, from_=1, to=100, width=3)
-        test_size_spinbox.set(TEST_SIZE_DEFAULT)
-        test_size_spinbox.config(validate="key", validatecommand=(validation_command, '%P'))
-        test_size_spinbox.grid(column=8, row=0)
-        percentage_label = ttk.Label(self.frame, text="%")
-        percentage_label.grid(column=9, row=0)
-        return test_size_spinbox
-
-    def create_decision_algorithm_combobox(self, decision_algorithms):
-        decision_algorithms.sort()
-        decision_algorithm_name_label = ttk.Label(self.frame, text="Nombre: ")
-        decision_algorithm_name_label.grid(column=10, row=0)
-        decision_algorithm_combobox = \
-            ttk.Combobox(self.frame, state="readonly", values=decision_algorithms, justify="center")
-        decision_algorithm_combobox.current(0)
-        decision_algorithm_combobox.grid(column=11, row=0)
-        return decision_algorithm_combobox
-
-    def create_confirm_button(self, frame):
-        confirm_button = ttk.Button(frame, text="Confirmar", command=self.dataset_parameters_confirmed)
-        confirm_button.config(state="disabled")
-        confirm_button.pack(side=tk.RIGHT)
-        return confirm_button
 
     def dataset_parameters_confirmed(self):
         test_size = self.test_size_spinbox.get()

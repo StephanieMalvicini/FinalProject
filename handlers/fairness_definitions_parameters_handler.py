@@ -32,10 +32,17 @@ class FairnessDefinitionsParametersHandler:
         return parameters[required_parameters]
 
     def get_available_definitions_names(self):
-        return list(self.available_definitions["display_name"])
+        return list(self.available_definitions["definition_name"])
 
     def get_all_definitions_names(self):
-        return list(self.definitions["display_name"])
+        return pd.Series(self.definitions.display_name.values, index=self.definitions.definition_name).to_dict()
 
     def get_required_parameters_names(self):
         return list(self.required_parameters["parameter_name"])
+
+    def transform_parameters_type(self, parameters_values):
+        for name, value in parameters_values.items():
+            parameter = self.required_parameters.loc[self.required_parameters["parameter_name"] == name]
+            if "yes" in parameter["numeric"].unique():
+                parameters_values[name] = float(value)
+

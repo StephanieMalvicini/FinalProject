@@ -1,4 +1,4 @@
-from turtle import pd
+import pandas as pd
 
 
 class PredictionHandler:
@@ -15,7 +15,7 @@ class PredictionHandler:
 
     def get_predicted_outcome(self, individual):
         dataframe = pd.DataFrame().append(individual)
-        return self.decision_algorithm.predict_subject_outcome(dataframe)[0]
+        return self.decision_algorithm.predict_outcome(dataframe)[0]
 
     def predicted_outcome_available(self):
         return hasattr(self.decision_algorithm, "predict_outcome")

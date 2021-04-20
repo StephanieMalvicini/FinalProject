@@ -4,7 +4,7 @@ import tkinter as tk
 from exceptions.parameter_not_defined import ParameterNotDefined
 
 AMOUNT_PER_ROW = 6
-ERROR_TITLE = "Ningún atributo seleccionado"
+ERROR_TITLE = "Ningún atributo para las descripciones seleccionado"
 ERROR_DETAIL = "Por favor selecciona al menos un atributo antes de confirmar"
 
 

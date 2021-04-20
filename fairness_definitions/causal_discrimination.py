@@ -34,14 +34,11 @@ def causal_discrimination(attributes_test, descriptions, confidence, error, mini
                 fails_amount += 1
             if samples_amount > minimum_samples_amount:
                 p = fails_amount / samples_amount
-                current_error = statistical_constants.CONFIDENCE_Z_VALUES[int(confidence)] * math.sqrt(
+                current_error = statistical_constants.CONFIDENCE_Z_VALUES[confidence] * math.sqrt(
                     p * (1 - p) * 1.0 / samples_amount)
                 if current_error < error:
                     break
-    print(test_suite.to_string())
-    print("fails_amount: ", fails_amount)
-    print("samples_amount: ", samples_amount)
-    return fails_amount / samples_amount
+    return fails_amount / samples_amount, test_suite
 
 
 def create_similar_individual(individual, description) -> object:
