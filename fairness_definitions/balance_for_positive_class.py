@@ -6,7 +6,7 @@ def balance_for_positive_class(positives_table, metrics, maximum_acceptable_diff
     for i in range(groups_amount):
         for s in probabilities_values:
             if metrics[i]["TP"]+metrics[i]["FN"] > 0:
-                expected_values[i] += (s * positives_table[i][s]/(metrics[i]["TP"]+metrics[i]["FN"]))
+                expected_values[i] += (float(s) * positives_table[i][s]/(metrics[i]["TP"]+metrics[i]["FN"]))
     sorted_expected_values = sorted(expected_values)
     if sorted_expected_values[groups_amount - 1] - sorted_expected_values[0] > maximum_acceptable_difference:
         satisfies_balance_for_positive_class = False

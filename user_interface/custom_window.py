@@ -36,7 +36,7 @@ class CustomWindow:
                    """.format(os.getcwd().replace("\\", "/")))
         self.window.tk.call("package", "require", "awdark")
         self.window.tk.call("package", "require", "awlight")
-        style.theme_use("awlight")
+        #style.theme_use("awlight")
         self.window.configure(bg=style.lookup("TFrame", "background"))
         return style
 

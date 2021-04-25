@@ -6,7 +6,7 @@ def false_positive_error_rate_balance(metrics, maximum_acceptable_difference):
         tn = metrics[i]["TN"]
         fp = metrics[i]["FP"]
         if fp+tn > 0:
-            fpr.append(fp/fp+tn)
+            fpr.append(fp/(fp+tn))
         else:
             fpr.append(0)
     sorted_fpr = sorted(fpr)

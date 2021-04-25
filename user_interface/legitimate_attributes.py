@@ -288,4 +288,9 @@ class LegitimateAttribute:
             raise ParameterNotDefined(ERROR_TITLE_GROUP.format(self.group_number, name), ERROR_DETAIL_GROUP.format(name))
         sign = self.comparison_signs_combobox.get()
         value = self.current_attribute_values.get()
-        return "({}{}{})".format(name, sign, value)
+        if self.attribute_values_combobox == self.current_attribute_values:
+            string_template = "({}{}'{}')"
+        else:
+            string_template = "({}{}{})"
+        return string_template.format(name, sign, value)
+

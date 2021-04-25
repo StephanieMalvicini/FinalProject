@@ -11,7 +11,7 @@ class PredictionHandler:
         return self.decision_algorithm.predict_outcome(self.attributes_test)
 
     def get_predicted_probabilities(self):
-        return self.decision_algorithm.predict_probability(self.attributes_test)[:, 1]
+        return self.decision_algorithm.predict_probability(self.attributes_test)
 
     def get_predicted_outcome(self, individual):
         dataframe = pd.DataFrame().append(individual)
@@ -24,5 +24,5 @@ class PredictionHandler:
         return hasattr(self.decision_algorithm, "predict_probability")
 
     def distances_available(self):
-        return hasattr(self.decision_algorithm, "subjects_distance") and \
+        return hasattr(self.decision_algorithm, "individuals_distance") and \
                hasattr(self.decision_algorithm, "outcomes_distance")

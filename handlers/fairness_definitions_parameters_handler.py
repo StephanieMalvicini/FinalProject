@@ -22,6 +22,8 @@ class FairnessDefinitionsParametersHandler:
         if not dataset_handler.has_outcome():
             requirements.append("outcome != 'required'")
         all_requirements = " & ".join(requirements)
+        if len(all_requirements) == 0:
+            return self.definitions
         return self.definitions[self.definitions.eval(all_requirements)]
 
     def __get_required_parameters(self):
@@ -43,6 +45,7 @@ class FairnessDefinitionsParametersHandler:
     def transform_parameters_type(self, parameters_values):
         for name, value in parameters_values.items():
             parameter = self.required_parameters.loc[self.required_parameters["parameter_name"] == name]
-            if "yes" in parameter["numeric"].unique():
+            if "yes" in parameter["float"].unique():
                 parameters_values[name] = float(value)
-
+            elif "yes" in parameter["int"].unique():
+                parameters_values[name] = int(value)

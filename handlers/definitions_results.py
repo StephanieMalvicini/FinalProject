@@ -1,50 +1,65 @@
-MAXIMUM_FAILING_PERCENTAGE = 0.1
+from user_interface.definitions_results import *
 
 
-class ListResult:
+class Result:
 
-    def __init__(self, satisfies, list_name, list_result):
+    def __init__(self, satisfies):
+        self.elements = list()
         self.satisfies = satisfies
-        self.list_name = list_name
-        self.list = list_result
+
+    def add_element(self, element):
+        self.elements.append(element)
+
+    def show(self, frame):
+        show_result(self.satisfies, frame)
+        for element in self.elements:
+            element.show(frame)
 
 
-class DoubleListResult(ListResult):
+class ListElement:
 
-    def __init__(self, satisfies, first_list_name, first_list_result, second_list_name, second_list_result):
-        ListResult.__init__(self, satisfies, first_list_name, first_list_result)
-        self.second_list_name = second_list_name
-        self.second_list = second_list_result
+    def __init__(self, name, items_names, items):
+        self.name = name
+        self.items_names = items_names
+        self.items = items
 
-
-class TableResult:
-
-    def __init__(self, satisfies, table_name, table):
-        self.satisfies = satisfies
-        self.table_name = table_name
-        self.table = table
+    def show(self, frame):
+        show_list_element(self, frame)
 
 
-class PercentageWithDataFrameResult:
+class TableElement:
 
-    def __init__(self, percentage, dataframe_name, dataframe):
-        self.satisfies = percentage <= MAXIMUM_FAILING_PERCENTAGE
-        self.percentage = percentage
-        self.dataframe_name = dataframe_name
-        self.dataframe = dataframe
+    def __init__(self, name, column_names, data):
+        self.name = name
+        self.column_names = column_names
+        self.data = data
 
-
-class PercentageWithListResult:
-
-    def __init__(self, percentage, list_name, list_result):
-        self.satisfies = percentage <= MAXIMUM_FAILING_PERCENTAGE
-        self.percentage = percentage
-        self.list_name = list_name
-        self.list_result = list_result
+    def show(self, frame):
+        show_table_element(self, frame)
 
 
+class SingleElement:
+
+    def __init__(self, name, value):
+        self.name = name
+        self.value = value
+
+    def show(self, frame):
+        show_single_element(self, frame)
+
+
+"""
 class ListOfResults:
+    
+    def __init__(self):
+        self.results = list()
+        self.all_satisfy = True
 
-    def __init__(self, all_satisfy, results):
-        self.satisfies = all_satisfy
-        self.list = results
+    def add_element(self, result):
+        self.results.append(result)
+        self.all_satisfy &= result.satisfies
+
+    def show(self, frame):
+        for result in self.results:
+            result.show(frame)
+"""

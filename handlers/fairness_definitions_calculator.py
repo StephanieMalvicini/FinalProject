@@ -1,6 +1,6 @@
 from fairness_definitions.discrimination_basics import calculate_basic_metrics, \
     create_positives_negatives_tables, create_probabilities_table
-from handlers import fairness_definitions
+from handlers import fairness_definitions_adapter
 
 
 def get_testing_set(dataset_handler, prediction_handler):
@@ -25,7 +25,7 @@ def calculate(definitions, descriptions, parameters, dataset_handler, prediction
     add_parameters(testing_set, descriptions, parameters, dataset_handler, prediction_handler, outcome_handler)
     results = dict()
     for definition_name in definitions:
-        fairness_definition_method = getattr(fairness_definitions, "{}_aux".format(definition_name))
+        fairness_definition_method = getattr(fairness_definitions_adapter, "{}_aux".format(definition_name))
         results[definition_name] = fairness_definition_method(parameters)
     return results
 
@@ -38,7 +38,7 @@ def add_parameters(testing_set, descriptions, parameters, dataset_handler, predi
     parameters["decision_algorithm"] = prediction_handler.decision_algorithm
     if prediction_handler.predicted_probability_available():
         parameters["positives_table"], parameters["negatives_table"] = \
-            create_positives_negatives_tables(testing_set, descriptions, parameters["decimals"])
+            create_positives_negatives_tables(testing_set, descriptions, parameters["decimals"], outcome_handler)
         parameters["probabilities_table"] = \
             create_probabilities_table(parameters["positives_table"], parameters["negatives_table"],
                                        parameters["decimals"])

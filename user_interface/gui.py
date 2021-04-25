@@ -12,7 +12,7 @@ from user_interface.fairness_definitions_parameters import FairnessDefinitionsPa
 from user_interface.custom_window import CustomWindow
 
 TOTAL_WIDTH = 1300
-TOTAL_HEIGHT = 600
+TOTAL_HEIGHT = 700
 FRAME_PADX = (20, 20)
 TOTAL_FRAME_PADX = 40
 FRAME_PAXY = 5

@@ -9,6 +9,7 @@ sklearn = "*"
 scikit-learn = "*"
 ttkthemes = "*"
 numpy = "*"
+ipython = "*"
 
 [dev-packages]
 

@@ -14,7 +14,7 @@ class LogisticRegressionClassifier(OutcomePredictor, ProbabilityPredictor):
         return result
 
     def predict_probability(self, subjects):
-        return self.model.predict_proba(subjects)
+        return self.model.predict_proba(subjects)[:, 1]
 
     """
     def convert_dataset_values(self, dataset):

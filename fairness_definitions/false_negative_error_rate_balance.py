@@ -6,7 +6,7 @@ def false_negative_error_rate_balance(metrics, maximum_acceptable_difference):
         fn = metrics[i]["FN"]
         tp = metrics[i]["TP"]
         if tp+fn > 0:
-            fnr.append(fn/tp+fn)
+            fnr.append(fn/(tp+fn))
         else:
             fnr.append(0)
     sorted_fnr = sorted(fnr)
