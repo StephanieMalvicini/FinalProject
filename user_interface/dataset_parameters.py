@@ -33,7 +33,7 @@ class DatasetParameters:
         self.outcome_handler = outcome_handler
         self.confirmed_callback = confirmed_callback
         self.dialog = dialog
-        self.filename_text, self.filename_entry, self.filename_button = self.create_file_selector()
+        self.filename_text, self.filename_entry = self.create_file_selector()
         self.outcome_name_combobox = self.create_outcome_name_combobox()
         self.positive_outcome_combobox = self.create_positive_outcome_combobox()
         self.test_size_spinbox = self.create_test_size_spinbox()
@@ -48,7 +48,7 @@ class DatasetParameters:
         entry.grid(column=1, row=0)
         button = ttk.Button(self.frame, text="Seleccionar", command=self.open_filename_selector)
         button.grid(column=2, row=0)
-        return text, entry, button
+        return text, entry
 
     def open_filename_selector(self):
         filename = filedialog.askopenfilename(title="Seleccionar archivo conjuto de datos",

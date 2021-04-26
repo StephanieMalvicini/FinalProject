@@ -1,9 +1,12 @@
+import csv
 import importlib
+import os
 import sys
 
 import pandas as pd
 
 from exceptions.invalid_decision_algorithm_parameters import InvalidDecisionAlgorithmParameters
+from exceptions.value_already_exists import ValueAlreadyExists
 
 DECISION_ALGORITHMS_FILENAME = "decision_algorithms/decision_algorithms.csv"
 
@@ -19,8 +22,10 @@ class DecisionAlgorithmHandler:
     def create_decision_algorithm(self, display_name, *decision_algorithm_params):
         decision_algorithm = self.decision_algorithms.loc[self.decision_algorithms["display_name"] == display_name].iloc[0]
         class_name = decision_algorithm["class_name"]
-        file_name = decision_algorithm["file_name"]
-        module = importlib.import_module("decision_algorithms.{}".format(file_name))
+        full_path = decision_algorithm["full_path"]
+        file_name = os.path.basename(full_path)
+        sys.path.insert(1, full_path[0:-len(file_name)])
+        module = importlib.import_module(file_name[0:-3])
         decision_algorithm = getattr(module, class_name)
         try:
             return decision_algorithm(*decision_algorithm_params)
@@ -32,3 +37,11 @@ class DecisionAlgorithmHandler:
         except Exception:
             raise InvalidDecisionAlgorithmParameters(sys.exc_info())
 
+    def add_decision_algorithm(self, display_name, class_name, full_path):
+        if display_name in self.decision_algorithms["display_name"].unique():
+            raise ValueAlreadyExists("nombre para mostrar", display_name)
+        row = {"display_name": display_name, "class_name": class_name, "full_path": full_path}
+        with open(DECISION_ALGORITHMS_FILENAME, "a+", newline="") as dw:
+            writer = csv.DictWriter(dw, fieldnames=row.keys())
+            writer.writerow(row)
+        self.decision_algorithms = self.decision_algorithms.append(row, ignore_index=True)

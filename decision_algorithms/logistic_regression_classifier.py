@@ -15,11 +15,3 @@ class LogisticRegressionClassifier(OutcomePredictor, ProbabilityPredictor):
 
     def predict_probability(self, subjects):
         return self.model.predict_proba(subjects)[:, 1]
-
-    """
-    def convert_dataset_values(self, dataset):
-        for (column, column_type) in dataset.dtypes.items():
-            if column_type == "object":
-                dataset[column] = dataset[column].astype('category')
-                dataset[column] = dataset[column].cat.codes
-    """

@@ -1,3 +1,3 @@
-from user_interface.gui import GUI
+from user_interface.custom_window import CustomWindow
 
-gui = GUI()
+window = CustomWindow()

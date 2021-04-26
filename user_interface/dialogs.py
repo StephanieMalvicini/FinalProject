@@ -1,9 +1,3 @@
-"""from tkinter import messagebox
-
-
-def show_error(message, original_error):
-    messagebox.showerror(message, original_error)
-"""
 import tkinter as tk
 from tkinter import Toplevel, ttk
 

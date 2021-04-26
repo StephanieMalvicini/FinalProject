@@ -1,7 +1,7 @@
 from tkinter import ttk
 import tkinter as tk
 
-from user_interface.images import Images
+from user_interface.images import FairnessDefinitionResultImages
 
 
 class FairnessDefinitionsContainer:
@@ -93,7 +93,7 @@ class FairnessDefinition:
     def __init__(self, definition_name, display_name, parent_frame, value):
         self.name = definition_name
         self.value = value
-        self.images = Images()
+        self.images = FairnessDefinitionResultImages()
         self.frame = ttk.Frame(parent_frame)
         self.frame.pack(anchor=tk.W, fill=tk.X)
         self.image_label, self.name_and_icon_frame = self.create_name_and_icon(display_name)
