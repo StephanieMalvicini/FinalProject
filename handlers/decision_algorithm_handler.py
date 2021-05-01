@@ -19,6 +19,9 @@ class DecisionAlgorithmHandler:
     def get_decision_algorithms_names(self):
         return list(self.decision_algorithms["display_name"])
 
+    def get_decision_algorithms(self):
+        return self.decision_algorithms.T.to_dict().values()
+
     def create_decision_algorithm(self, display_name, *decision_algorithm_params):
         decision_algorithm = self.decision_algorithms.loc[self.decision_algorithms["display_name"] == display_name].iloc[0]
         class_name = decision_algorithm["class_name"]
@@ -37,11 +40,14 @@ class DecisionAlgorithmHandler:
         except Exception:
             raise InvalidDecisionAlgorithmParameters(sys.exc_info())
 
-    def add_decision_algorithm(self, display_name, class_name, full_path):
-        if display_name in self.decision_algorithms["display_name"].unique():
-            raise ValueAlreadyExists("nombre para mostrar", display_name)
-        row = {"display_name": display_name, "class_name": class_name, "full_path": full_path}
+    def add_decision_algorithm(self, row):
+        if row["display_name"] in self.decision_algorithms["display_name"].unique():
+            raise ValueAlreadyExists("nombre para mostrar", row["display_name"])
         with open(DECISION_ALGORITHMS_FILENAME, "a+", newline="") as dw:
             writer = csv.DictWriter(dw, fieldnames=row.keys())
             writer.writerow(row)
         self.decision_algorithms = self.decision_algorithms.append(row, ignore_index=True)
+
+    def delete_decision_algorithm(self, display_name):
+        self.decision_algorithms = self.decision_algorithms[self.decision_algorithms.display_name != display_name]
+        self.decision_algorithms.to_csv(DECISION_ALGORITHMS_FILENAME, index=False)

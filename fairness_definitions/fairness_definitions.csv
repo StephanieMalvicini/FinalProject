@@ -5,7 +5,7 @@ causal_discrimination,Causal discrimination,,required,,,,required,required,requi
 conditional_statistical_parity,Conditional statistical parity,required,required,,,required,,,,required,
 conditional_use_accuracy_equality,Conditional use accuracy equality,required,required,,,required,,,,,
 equalized_odds,Equalized odds,required,required,,,required,,,,,
-fairness_through_awareness,Fairness through awareness,,required,,required,,,,,,
+fairness_through_awareness,Fairness through awareness,,required,,required,,required,required,required,,
 false_negative_error_rate_balance,False negative error rate balance,required,required,,,required,,,,,
 false_positive_error_rate_balance,False positive error rate balance,required,required,,,required,,,,,
 group_fairness,Group fairness,required,required,,,required,,,,,

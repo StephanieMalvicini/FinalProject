@@ -31,7 +31,7 @@ def causal_discrimination_aux(parameters):
     result.add_element(SingleElement("confidence", parameters["confidence"]))
     result.add_element(SingleElement("error", parameters["error"]))
     result.add_element(SingleElement("minimum_samples_amount", parameters["minimum_samples_amount"]))
-    result.add_element(SingleElement("Porcentaje que no satisface", percentage))
+    result.add_element(SingleElement("Porcentaje que no satisface", percentage*100))
     # arrange attributes so the ones used in the descriptions goes first
     sorted_columns = list(parameters["descriptions"][0].keys())
     sorted_columns.insert(0, "PredictedOutcome")
@@ -131,14 +131,18 @@ def equalized_odds_aux(parameters):
 
 def fairness_through_awareness_aux(parameters):
     percentage, failing_cases = fairness_through_awareness(parameters["testing_set"],
-                                                           parameters["decision_algorithm"])
+                                                           parameters["decision_algorithm"],
+                                                           parameters["confidence"],
+                                                           parameters["error"],
+                                                           parameters["minimum_samples_amount"])
     result = Result(percentage <= MAXIMUM_FAILING_PERCENTAGE)
-    result.add_element(SingleElement("Porcentaje que no satisface", percentage))
-    for case in failing_cases:
+    result.add_element(SingleElement("Porcentaje que no satisface", percentage*100))
+    """for case in failing_cases:
         result.add_element(SingleElement("Sujeto 1", format_descriptions(case.individual1.to_dict())))
         result.add_element(SingleElement("Sujeto 2", format_descriptions(case.individual2.to_dict())))
         result.add_element(SingleElement("Distancia entre sujetos", case.individuals_distance))
         result.add_element(SingleElement("Distancia entre salidas", case.outcomes_distance))
+    """
     return result
 
 

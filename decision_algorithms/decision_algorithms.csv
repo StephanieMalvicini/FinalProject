@@ -1,3 +1,4 @@
 display_name,class_name,full_path
-Clasificador injusto,BiasClassifier,C:/Users/sam_p/Documents/FinalProject/decision_algorithms/bias_classifier.py
-Logistic Regression,LogisticRegression,C:/Users/sam_p/Documents/FinalProject/decision_algorithms/logistic_regression_classifier.py
+Injusto,BiasClassifier,C:/Users/sam_p/Documents/FinalProject/decision_algorithms/bias_classifier.py
+Justo,FairClassifier,C:/Users/sam_p/Documents/FinalProject/decision_algorithms/fair_classifier.py
+Aleatorio,RandomClassifier,C:/Users/sam_p/Documents/FinalProject/decision_algorithms/random_classifier.py

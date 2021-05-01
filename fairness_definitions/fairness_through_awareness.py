@@ -1,6 +1,8 @@
 import copy
 import math
 
+from constants import statistical_constants
+
 
 class FailingCase:
 
@@ -11,23 +13,29 @@ class FailingCase:
         self.outcomes_distance = outcomes_distance
 
 
-def fairness_through_awareness(testing_set, decision_algorithm):
+def fairness_through_awareness(testing_set, decision_algorithm, confidence, error, minimum_samples_amount):
     not_satisfies = 0
     individuals_amount = len(testing_set)
     failing_cases = list()
+    verified_cases = 0
     for i in range(individuals_amount-1):
         for first in range(i+1, individuals_amount):
+            verified_cases += 1
             individual1 = clone_and_remove_added_attributes(testing_set.iloc[i])
             individual2 = clone_and_remove_added_attributes(testing_set.iloc[first])
             individuals_distance = decision_algorithm.individuals_distance(individual1, individual2)
-            outcomes_distance = decision_algorithm.outcomes_distance(individual1["PredictedOutcome"],
-                                                                     individual2["PredictedOutcome"])
+            outcomes_distance = \
+                decision_algorithm.outcomes_distance(individual1["PredictedOutcome"], individual2["PredictedOutcome"])
             if outcomes_distance > individuals_distance:
                 not_satisfies += 1
                 failing_cases.append(FailingCase(individual1, individual2, individuals_distance, outcomes_distance))
-    total_combinations = math.factorial(individuals_amount)/(2*math.factorial(individuals_amount-2))
-    not_satisfies_percentage = not_satisfies/total_combinations * 100
-    return not_satisfies_percentage, failing_cases
+            if verified_cases > minimum_samples_amount:
+                p = not_satisfies / verified_cases
+                current_error = statistical_constants.CONFIDENCE_Z_VALUES[confidence] * math.sqrt(
+                    p * (1 - p) * 1.0 / verified_cases)
+                if current_error < error:
+                    return p, failing_cases
+    return not_satisfies / verified_cases, failing_cases
 
 
 def clone_and_remove_added_attributes(individual):

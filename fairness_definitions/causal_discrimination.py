@@ -41,7 +41,7 @@ def causal_discrimination(attributes_test, descriptions, confidence, error, mini
     return fails_amount / samples_amount, test_suite
 
 
-def create_similar_individual(individual, description) -> object:
+def create_similar_individual(individual, description):
     similar_individual = copy.deepcopy(individual)
     for attribute in description.keys():
         similar_individual[attribute] = description[attribute]

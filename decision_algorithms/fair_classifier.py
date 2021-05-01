@@ -20,6 +20,3 @@ class FairClassifier(OutcomePredictor, ProbabilityPredictor, DistanceCalculator)
         for _ in subjects.iterrows():
             outcomes.append(1)
         return outcomes
-
-
-#EDITADO
