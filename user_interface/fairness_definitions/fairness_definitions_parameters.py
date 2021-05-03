@@ -32,8 +32,8 @@ class FairnessDefinitionsParametersContainer:
                                           required_parameters_names,
                                           self.dialog)
 
-    def get_parameters_values(self):
-        return self.fairness_definitions_parameters.get_parameters_values()
+    def get_parameters_values(self, required_parameters):
+        return self.fairness_definitions_parameters.get_parameters_values(required_parameters)
 
 
 class FairnessDefinitionsParameters:
@@ -41,7 +41,7 @@ class FairnessDefinitionsParameters:
     def __init__(self, parent_frame, max_samples, attributes_values, required_parameters_names, dialog):
         self.frame = ttk.Frame(parent_frame)
         self.frame.pack(anchor=tk.W, padx=10, pady=(7, 10))
-        self.required_parameters = dict()
+        self.required_parameters_widgets = dict()
         self.create_maximum_acceptable_difference_spinbox(required_parameters_names)
         self.create_confidence_combobox(required_parameters_names)
         self.create_error_spinbox(required_parameters_names)
@@ -61,7 +61,7 @@ class FairnessDefinitionsParameters:
         if "maximum_acceptable_difference" not in required_parameters_names:
             spinbox.config(state="disabled")
         else:
-            self.required_parameters["maximum_acceptable_difference"] = spinbox
+            self.required_parameters_widgets["maximum_acceptable_difference"] = spinbox
 
     def create_confidence_combobox(self, required_parameters_names):
         label = ttk.Label(self.frame, text="Confianza:")
@@ -75,7 +75,7 @@ class FairnessDefinitionsParameters:
         if "confidence" not in required_parameters_names:
             combobox.config(state="disabled")
         else:
-            self.required_parameters["confidence"] = combobox
+            self.required_parameters_widgets["confidence"] = combobox
 
     def create_error_spinbox(self, required_parameters_names):
         label = ttk.Label(self.frame, text="Máximo error:")
@@ -88,7 +88,7 @@ class FairnessDefinitionsParameters:
         if "error" not in required_parameters_names:
             spinbox.config(state="disabled")
         else:
-            self.required_parameters["error"] = spinbox
+            self.required_parameters_widgets["error"] = spinbox
 
     def create_minimum_samples_amount_spinbox(self, max_samples, required_parameters_names):
         label = ttk.Label(self.frame, text="Mínima cantidad de pruebas:")
@@ -101,7 +101,7 @@ class FairnessDefinitionsParameters:
         if "minimum_samples_amount" not in required_parameters_names:
             spinbox.config(state="disabled")
         else:
-            self.required_parameters["minimum_samples_amount"] = spinbox
+            self.required_parameters_widgets["minimum_samples_amount"] = spinbox
 
     def create_decimals_spinbox(self, required_parameters_names):
         label = ttk.Label(self.frame, text="Decimales probabilidad:")
@@ -114,7 +114,7 @@ class FairnessDefinitionsParameters:
         if "decimals" not in required_parameters_names:
             spinbox.config(state="disabled")
         else:
-            self.required_parameters["decimals"] = spinbox
+            self.required_parameters_widgets["decimals"] = spinbox
 
     def create_legitimate_attributes_list(self, parent_frame, attributes_values, dialog, required_parameters_names):
         required = "legitimate_attributes_list" in required_parameters_names
@@ -122,16 +122,13 @@ class FairnessDefinitionsParameters:
         frame.pack(anchor=tk.W, padx=10, pady=(0, 10))
         legitimate_attributes_list = LegitimateAttributesList(frame, 1, attributes_values, required, dialog)
         if required:
-            self.required_parameters["legitimate_attributes_list"] = legitimate_attributes_list
+            self.required_parameters_widgets["legitimate_attributes_list"] = legitimate_attributes_list
         return frame
 
-    def get_parameters_values(self):
-        minimum_samples_amount = self.required_parameters["minimum_samples_amount"]
-        if minimum_samples_amount and len(minimum_samples_amount.get()) == 0:
-            raise ParameterNotDefined(MINIMUM_SAMPLES_AMOUNT_ERROR_TITLE, MINIMUM_SAMPLES_AMOUNT_ERROR_DETAIL)
+    def get_parameters_values(self, required_parameters):
         parameters_values = dict()
-        for parameter, widget in self.required_parameters.items():
-            parameters_values[parameter] = widget.get()
+        for parameter in required_parameters:
+            parameters_values[parameter] = self.required_parameters_widgets[parameter].get()
         return parameters_values
 
     def destroy(self):

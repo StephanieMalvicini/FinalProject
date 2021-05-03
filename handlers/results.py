@@ -47,19 +47,3 @@ class SingleElement:
     def show(self, frame):
         show_single_element(self, frame)
 
-
-"""
-class ListOfResults:
-    
-    def __init__(self):
-        self.results = list()
-        self.all_satisfy = True
-
-    def add_element(self, result):
-        self.results.append(result)
-        self.all_satisfy &= result.satisfies
-
-    def show(self, frame):
-        for result in self.results:
-            result.show(frame)
-"""

@@ -12,11 +12,12 @@ class FairnessDefinitionsContainer:
         self.calculate_callback = calculate_callback
         self.dialog = dialog
 
-    def update(self, available_definitions, all_definitions, testing_set):
+    def update(self, available_definitions, all_definitions_display_names, testing_set):
         if self.fairness_definitions:
             self.fairness_definitions.destroy()
         self.fairness_definitions = FairnessDefinitionsList(self.frame, available_definitions, self.dialog,
-                                                            all_definitions, self.calculate_callback, testing_set)
+                                                            all_definitions_display_names, self.calculate_callback,
+                                                            testing_set)
 
     def show_result(self, results, plots):
         self.fairness_definitions.show_result(results, plots)
@@ -24,7 +25,8 @@ class FairnessDefinitionsContainer:
 
 class FairnessDefinitionsList:
 
-    def __init__(self, parent_frame, available_definitions, dialog, all_definitions, calculate_callback, testing_set):
+    def __init__(self, parent_frame, available_definitions, dialog, all_definitions_display_names, calculate_callback,
+                 testing_set):
         self.dialog = dialog
         self.calculate_callback = calculate_callback
         self.buttons_frame = ttk.Frame(parent_frame)
@@ -36,7 +38,7 @@ class FairnessDefinitionsList:
         self.calculate_button = self.create_calculate_button()
         self.frame = ttk.Frame(parent_frame)
         self.frame.pack(anchor=tk.W, fill=tk.X, padx=10, pady=(5, 10))
-        self.fairness_definitions = self.create_check_buttons(available_definitions, all_definitions)
+        self.fairness_definitions = self.create_check_buttons(available_definitions, all_definitions_display_names)
 
     def create_select_all_button(self):
         button = ttk.Button(self.buttons_frame, text="Seleccionar todas", width=20, command=self.select_all)
@@ -79,12 +81,12 @@ class FairnessDefinitionsList:
         if len(selected_definitions) > 0:
             self.calculate_callback(selected_definitions)
 
-    def create_check_buttons(self, available_definitions, all_definitions):
+    def create_check_buttons(self, available_definitions, all_definitions_display_names):
         fairness_definitions = list()
-        all_definitions_names = list(all_definitions.keys())
+        all_definitions_names = list(all_definitions_display_names.keys())
         all_definitions_names.sort()
         for definition_name in all_definitions_names:
-            display_name = all_definitions[definition_name]
+            display_name = all_definitions_display_names[definition_name]
             value = tk.BooleanVar()
             value.set(False)
             if definition_name in available_definitions:

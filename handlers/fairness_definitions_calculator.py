@@ -23,7 +23,7 @@ class FairnessDefinitionsCalculator:
             if self.prediction_handler.predicted_probability_available():
                 predicted_probabilities = self.prediction_handler.get_predicted_probabilities()
                 attributes_test["PredictedProbability"] = predicted_probabilities
-            if self. prediction_handler.predicted_outcome_available():
+            if self.prediction_handler.predicted_outcome_available():
                 predicted_outcomes = self.prediction_handler.get_predicted_outcomes()
                 attributes_test["PredictedOutcome"] = predicted_outcomes
             attributes_test.reset_index(drop=True, inplace=True)
@@ -31,11 +31,11 @@ class FairnessDefinitionsCalculator:
             raise InvalidDecisionAlgorithmParameters(sys.exc_info())
         return attributes_test
 
-    def calculate(self, fairness_definitions):
+    def calculate(self, fairness_definitions, parameters_display_names):
         results = dict()
         for definition_name in fairness_definitions:
             fairness_definition_method = getattr(fairness_definitions_adapter, "{}_aux".format(definition_name))
-            results[definition_name] = fairness_definition_method(self.params)
+            results[definition_name] = fairness_definition_method(self.params, parameters_display_names)
         return results
 
     def create_parameters(self):
@@ -46,15 +46,21 @@ class FairnessDefinitionsCalculator:
         params["decision_algorithm"] = self.prediction_handler.decision_algorithm
         return params
 
-    def update_parameters(self, descriptions, new_params): # ver de no actualizar si no cambio
+    def update_parameters(self, descriptions, new_params):
+        old_descriptions = self.params["descriptions"] if "descriptions" in self.params.keys() else None
+        old_decimals = self.params["decimals"] if "decimals" in self.params.keys() else None
         self.params["descriptions"] = descriptions
         for (name, value) in new_params.items():
             self.params[name] = value
-        self.update_tables()
-        self.update_metrics()
+        if old_descriptions != self.params["descriptions"]:
+            self.update_metrics()
+            if "decimals" in self.params.keys():
+                self.update_tables()
+        elif "decimals" in self.params.keys() and old_decimals != self.params["decimals"]:
+            self.update_tables()
 
     def update_tables(self):
-        if self.prediction_handler.predicted_probability_available() and "decimals" in self.params.keys():
+        if self.prediction_handler.predicted_probability_available():
             self.params["positives_table"], self.params["negatives_table"] = create_positives_negatives_tables(
                 self.testing_set, self.params["descriptions"], self.params["decimals"], self.outcome_handler)
             self.params["probabilities_table"] = create_probabilities_table(

@@ -3,6 +3,7 @@ from tkinter import Toplevel, ttk
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
+from user_interface.plots import COLORS
 from user_interface.tree_view import create_tree_view
 
 ERROR_TOTAL_WIDTH = 400
@@ -72,14 +73,16 @@ class CustomDialog:
         canvas.draw()
         canvas.get_tk_widget().pack(fill=tk.BOTH)
 
-    def show_plot_details(self, details, title): #pasarlo a un table?
+    def show_plot_details(self, details, title):
         dialog = self.create_plot_dialog(title)
         dialog.config(bg=self.window["bg"])
         frame = ttk.Frame(dialog)
         frame.pack(padx=10, pady=10, anchor=tk.NW, fill=tk.BOTH)
-        for item in details:
-            label = tk.Label(frame, text=str(item))
-            label.pack(anchor=tk.W, padx=1)
+        for i, item in enumerate(details):
+            side_border = tk.Frame(frame, bg=COLORS[i % len(COLORS)])
+            side_border.pack(anchor=tk.W, padx=(1, 0))
+            label = tk.Label(side_border, text=str(item))
+            label.pack(anchor=tk.W, padx=(5, 0))
 
     def show_testing_set(self, testing_set):
         dialog = self.create_plot_dialog("Conjunto de pruebas")

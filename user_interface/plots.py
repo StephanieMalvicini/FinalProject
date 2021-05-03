@@ -1,15 +1,16 @@
-import matplotlib.style
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 
-mpl.style.use("seaborn-pastel")
+COLORS = ["#92C6FF", "#97F0AA", "#FF9F9A", "#D0BBFF", "#FFFEA3", "#B0E0E6",
+          "#94b2ff", "#b0f098", "#ff99ce", "#f6bdff", "#ffe2a3", "#b1e7da"]
+mpl.rcParams["axes.prop_cycle"] = mpl.cycler(color=COLORS)
 
 
 def create_table_subplot(axis, table, table_title):
     x = [float(value) for value in table[0].keys()]
     for i, group in enumerate(table, start=1):
-        axis.plot(x, group.values(), label="Grupo: {}".format(i))
+        axis.plot(x, group.values(), label="Grupo: {}".format(i), marker="o")
     axis.set_title(table_title)
     axis.legend()
     axis.set_xlabel("Probabilidad predicha")
@@ -50,7 +51,7 @@ class Plots:
         return names
 
     def show_positives_negatives_tables(self):
-        figure, (axis1, axis2) = plt.subplots(nrows=1, ncols=2, sharey="True")
+        figure, (axis1, axis2) = plt.subplots(nrows=1, ncols=2, sharey="all")
         create_table_subplot(axis1, self.positives_table, "Tabla positivos")
         create_table_subplot(axis2, self.negatives_table, "Tabla negativos")
         self.dialog.show_plot_with_details("Cantidades probabilidades predichas", figure,
