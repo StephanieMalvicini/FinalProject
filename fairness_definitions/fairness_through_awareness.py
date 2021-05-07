@@ -15,7 +15,7 @@ class FailingCase:
 
 def fairness_through_awareness(testing_set, decision_algorithm, confidence, error, minimum_samples_amount):
     not_satisfies = 0
-    individuals_amount = len(testing_set)
+    individuals_amount = len(testing_set.index)
     failing_cases = list()
     verified_cases = 0
     for i in range(individuals_amount-1):
@@ -32,7 +32,7 @@ def fairness_through_awareness(testing_set, decision_algorithm, confidence, erro
             if verified_cases > minimum_samples_amount:
                 p = not_satisfies / verified_cases
                 current_error = statistical_constants.CONFIDENCE_Z_VALUES[confidence] * math.sqrt(
-                    p * (1 - p) * 1.0 / verified_cases)
+                    p * (1 - p) / verified_cases)
                 if current_error < error:
                     return p, failing_cases
     return not_satisfies / verified_cases, failing_cases

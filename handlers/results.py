@@ -1,4 +1,4 @@
-from user_interface.fairness_definitions.definitions_results import *
+from user_interface.fairness_definitions.results import *
 
 
 class Result:
@@ -11,9 +11,9 @@ class Result:
         self.elements.append(element)
 
     def show(self, frame):
-        show_result(self.satisfies, frame)
+        elements_frame = show_result(self.satisfies, frame)
         for element in self.elements:
-            element.show(frame)
+            element.show(elements_frame)
 
 
 class ListElement:
@@ -29,10 +29,11 @@ class ListElement:
 
 class TableElement:
 
-    def __init__(self, name, column_names, data):
+    def __init__(self, name, column_names, data, first_column_centered=True):
         self.name = name
         self.column_names = column_names
         self.data = data
+        self.first_column_centered = first_column_centered
 
     def show(self, frame):
         show_table_element(self, frame)

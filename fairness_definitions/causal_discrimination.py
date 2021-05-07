@@ -35,7 +35,7 @@ def causal_discrimination(attributes_test, descriptions, confidence, error, mini
             if samples_amount > minimum_samples_amount:
                 p = fails_amount / samples_amount
                 current_error = statistical_constants.CONFIDENCE_Z_VALUES[confidence] * math.sqrt(
-                    p * (1 - p) * 1.0 / samples_amount)
+                    p * (1 - p) / samples_amount)
                 if current_error < error:
                     break
     return fails_amount / samples_amount, test_suite

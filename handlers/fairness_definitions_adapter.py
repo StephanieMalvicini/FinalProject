@@ -25,15 +25,15 @@ def causal_discrimination_aux(parameters, parameters_display_names):
     percentage, testing_suite = causal_discrimination(parameters["testing_set"],
                                                       parameters["descriptions"],
                                                       parameters["confidence"],
-                                                      parameters["error"],
+                                                      parameters["error"]/100,
                                                       parameters["minimum_samples_amount"],
                                                       parameters["prediction_handler"])
     result = Result(percentage <= MAXIMUM_FAILING_PERCENTAGE)
-    result.add_element(SingleElement(parameters_display_names["confidence"], parameters["confidence"]))
-    result.add_element(SingleElement(parameters_display_names["error"], parameters["error"]))
+    result.add_element(SingleElement(parameters_display_names["confidence"], "{}%".format(parameters["confidence"])))
+    result.add_element(SingleElement(parameters_display_names["error"], "{}%".format(parameters["error"])))
     result.add_element(SingleElement(parameters_display_names["minimum_samples_amount"],
                                      parameters["minimum_samples_amount"]))
-    result.add_element(SingleElement(PERCENTAGE_NOT_SATISFIES, percentage*100))
+    result.add_element(SingleElement(PERCENTAGE_NOT_SATISFIES, percentage * 100))
     # arrange attributes so the ones used in the descriptions goes first
     sorted_columns = list(parameters["descriptions"][0].keys())
     sorted_columns.insert(0, "PredictedOutcome")
@@ -45,6 +45,7 @@ def causal_discrimination_aux(parameters, parameters_display_names):
     column_names = list(testing_suite.columns)
     data = testing_suite.values.tolist()
     result.add_element(TableElement("Conjunto de pruebas", column_names, data))
+    result.add_element(SingleElement("Total casos analizados", len(data)))
     return result
 
 
@@ -66,18 +67,19 @@ def conditional_statistical_parity_aux(parameters, parameters_display_names):
         list_name = legitimate_attributes.split(" & ")
         list_name = [item[1:-1] for item in list_name]
         list_name = ",".join(list_name)
-        list_name = "l: {}".format(list_name)
+        list_name = "L: {}".format(list_name)
         proportions_names = list()
         for description in parameters["descriptions"]:
-            proportions_names.append("P({}=1|L=l,{})".format(PREDICTED_OUTCOME,
-                                                             format_descriptions(description)))
+            proportions_names.append("P({}=1|L,{})".format(PREDICTED_OUTCOME,
+                                                           format_descriptions(description)))
         single_result = Result(satisfies)
         single_result.add_element(ListElement(list_name, proportions_names, proportions))  # (tp+fp)/(tp+fp+tn+fn)
         results.append(single_result)
         all_satisfy &= satisfies
     final_result = Result(all_satisfy)
     final_result.add_element(
-        SingleElement(parameters_display_names["maximum_acceptable_difference"], parameters["maximum_acceptable_difference"]))
+        SingleElement(parameters_display_names["maximum_acceptable_difference"],
+                      parameters["maximum_acceptable_difference"]))
     for result in results:
         final_result.add_element(result)
     return final_result
@@ -109,14 +111,14 @@ def conditional_use_accuracy_equality_aux(parameters, parameters_display_names):
 
 
 def equalized_odds_aux(parameters, parameters_display_names):
-    satisfies, fnr, fpr = equalized_odds(parameters["metrics"],
+    satisfies, tpr, fpr = equalized_odds(parameters["metrics"],
                                          parameters["maximum_acceptable_difference"])
-    fnr_names = list()
+    tpr_names = list()
     fpr_names = list()
     for description in parameters["descriptions"]:
         formatted_description = format_descriptions(description)
-        fnr_names.append("P({}={}|{}={},{})".format(PREDICTED_OUTCOME,
-                                                    parameters["outcome_handler"].negative_outcome,
+        tpr_names.append("P({}={}|{}={},{})".format(PREDICTED_OUTCOME,
+                                                    parameters["outcome_handler"].positive_outcome,
                                                     parameters["outcome_handler"].outcome_name,
                                                     parameters["outcome_handler"].positive_outcome,
                                                     formatted_description))
@@ -128,7 +130,7 @@ def equalized_odds_aux(parameters, parameters_display_names):
     result = Result(satisfies)
     result.add_element(SingleElement(parameters_display_names["maximum_acceptable_difference"],
                                      parameters["maximum_acceptable_difference"]))
-    result.add_element(ListElement("FNR", fnr_names, fnr))
+    result.add_element(ListElement("TPR", tpr_names, tpr))
     result.add_element(ListElement("FPR", fpr_names, fpr))
     return result
 
@@ -137,10 +139,15 @@ def fairness_through_awareness_aux(parameters, parameters_display_names):
     percentage, failing_cases = fairness_through_awareness(parameters["testing_set"],
                                                            parameters["decision_algorithm"],
                                                            parameters["confidence"],
-                                                           parameters["error"],
+                                                           parameters["error"]/100,
                                                            parameters["minimum_samples_amount"])
     result = Result(percentage <= MAXIMUM_FAILING_PERCENTAGE)
-    result.add_element(SingleElement(PERCENTAGE_NOT_SATISFIES, percentage*100))
+    result.add_element(SingleElement(parameters_display_names["confidence"], "{}%".format(parameters["confidence"])))
+    result.add_element(SingleElement(parameters_display_names["error"], "{}%".format(parameters["error"])))
+    result.add_element(SingleElement(parameters_display_names["minimum_samples_amount"],
+                                     parameters["minimum_samples_amount"]))
+    result.add_element(SingleElement(PERCENTAGE_NOT_SATISFIES, percentage * 100))
+    result.add_element(SingleElement("Casos que no cumplen", len(failing_cases)))
     """for case in failing_cases:
         result.add_element(SingleElement("Sujeto 1", format_descriptions(case.individual1.to_dict())))
         result.add_element(SingleElement("Sujeto 2", format_descriptions(case.individual2.to_dict())))
@@ -277,7 +284,7 @@ def treatment_equality_aux(parameters, parameters_display_names):
     return result
 
 
-def add_probabilities_table_parameter(result, parameters):
+def add_probabilities_table_parameter(result, parameters, column_satisfies):
     row_descriptions = list()
     template = "P({}={}|S=s,{})"
     for description in parameters["descriptions"]:
@@ -290,25 +297,28 @@ def add_probabilities_table_parameter(result, parameters):
     data = [list(dict_probabilities.values()) for dict_probabilities in parameters["probabilities_table"]]
     for i, row in enumerate(data):
         row.insert(0, row_descriptions[i])
-    result.add_element(TableElement("probabilities_table", column_names, data))
+    results_row = ["Satisface" if element else "No satisface" for element in column_satisfies.values()]
+    results_row.insert(0, "Resultado")
+    data.append(results_row)
+    result.add_element(TableElement("Tabla probabilidades", column_names, data, first_column_centered=False))
 
 
 def test_fairness_aux(parameters, parameters_display_names):
-    satisfies = test_fairness(parameters["probabilities_table"],
-                              parameters["maximum_acceptable_difference"],
-                              parameters["decimals"])
-    result = Result(satisfies)
+    satisfies_list = test_fairness(parameters["probabilities_table"],
+                                   parameters["maximum_acceptable_difference"],
+                                   parameters["decimals"])
+    result = Result(True in satisfies_list)
     result.add_element(SingleElement(parameters_display_names["maximum_acceptable_difference"],
                                      parameters["maximum_acceptable_difference"]))
     result.add_element(SingleElement(parameters_display_names["decimals"], parameters["decimals"]))
-    add_probabilities_table_parameter(result, parameters)
+    add_probabilities_table_parameter(result, parameters, satisfies_list)
     return result
 
 
 def well_calibration_aux(parameters, parameters_display_names):
-    satisfies = well_calibration(parameters["probabilities_table"],
-                                 parameters["decimals"])
-    result = Result(satisfies)
+    satisfies_list = well_calibration(parameters["probabilities_table"],
+                                      parameters["decimals"])
+    result = Result(True in satisfies_list)
     result.add_element(SingleElement(parameters_display_names["decimals"], parameters["decimals"]))
-    add_probabilities_table_parameter(result, parameters)
+    add_probabilities_table_parameter(result, parameters, satisfies_list)
     return result

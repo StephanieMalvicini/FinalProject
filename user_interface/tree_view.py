@@ -2,7 +2,7 @@ from tkinter import ttk
 import tkinter as tk
 
 
-def create_tree_view(parent_frame, column_names, data, max_height):
+def create_tree_view(parent_frame, column_names, data, max_height, first_centered=True):
     frame = ttk.Frame(parent_frame)
     frame.pack(fill=tk.X, anchor=tk.W)
     height = max_height if len(data) >= max_height else len(data)
@@ -10,6 +10,8 @@ def create_tree_view(parent_frame, column_names, data, max_height):
     for column in column_names:
         tree_view.column(column, anchor=tk.CENTER)
         tree_view.heading(column, text=column)
+    if not first_centered:
+        tree_view.column(column_names[0], anchor=tk.W)
     for row in data:
         tree_view.insert("", "end", values=row)
     # horizontal scroll

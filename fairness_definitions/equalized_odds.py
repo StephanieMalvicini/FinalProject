@@ -7,4 +7,5 @@ def equalized_odds(metrics, maximum_acceptable_difference):
         false_negative_error_rate_balance(metrics, maximum_acceptable_difference)
     satisfies_false_positive_error_rate_balance, fpr = \
         false_positive_error_rate_balance(metrics, maximum_acceptable_difference)
-    return satisfies_false_positive_error_rate_balance & satisfies_false_negative_error_rate_balance, fnr, fpr
+    tpr = [1 - value for value in fnr]
+    return satisfies_false_positive_error_rate_balance & satisfies_false_negative_error_rate_balance, tpr, fpr

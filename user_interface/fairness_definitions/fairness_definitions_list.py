@@ -126,7 +126,6 @@ class FairnessDefinition:
         self.image_label, self.name_and_icon_frame = self.create_name_and_icon(display_name)
         self.show_more_button = self.create_show_more_button()
         self.result_frame = ttk.Frame(self.frame)
-        self.has_result = False
 
     def create_name_and_icon(self, display_name):
         name_and_icon_frame = ttk.Frame(self.frame)
@@ -152,11 +151,6 @@ class FairnessDefinition:
         self.show_more_button.config(command=self.show_more, image=self.images.show_more)
 
     def add_result(self, result):
-        if self.has_result:
-            separator = ttk.Separator(self.result_frame, orient='horizontal')
-            separator.pack(fill=tk.X)
-        else:
-            self.has_result = True
         self.change_icon(result.satisfies)
         self.show_more_button.config(state="normal")
         new_result_frame = ttk.Frame(self.result_frame)

@@ -20,7 +20,7 @@ class RandomClassifier(OutcomePredictor, DistanceCalculator, ProbabilityPredicto
     def predict_outcome(self, subjects):
         outcomes = []
         for _ in subjects.iterrows():
-            outcomes.append(randint(0, 2))
+            outcomes.append(randint(0, 1))
         return outcomes
 
 

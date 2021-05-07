@@ -1,17 +1,14 @@
 import tkinter as tk
 from tkinter import ttk
 
-from exceptions.parameter_not_defined import ParameterNotDefined
 from handlers import input_validator
 from constants.statistical_constants import CONFIDENCE_Z_VALUES
 from user_interface.fairness_definitions.legitimate_attributes import LegitimateAttributesList
 
 MAXIMUM_ACCEPTABLE_DIFFERENCE_DEFAULT = 0.01
-ERROR_DEFAULT = 0.01
+ERROR_DEFAULT = 10
 MINIMUM_SAMPLES_AMOUNT_DEFAULT = 1
 DECIMALS_DEFAULT = 0
-MINIMUM_SAMPLES_AMOUNT_ERROR_TITLE = "Mínima cantidad de pruebas sin especificar"
-MINIMUM_SAMPLES_AMOUNT_ERROR_DETAIL = "Por favor ingrese la cantidad mínima de pruebas para continuar"
 
 
 class FairnessDefinitionsParametersContainer:
@@ -81,10 +78,12 @@ class FairnessDefinitionsParameters:
         label = ttk.Label(self.frame, text="Máximo error:")
         label.grid(column=6, row=0)
         validation_command = (self.frame.register(input_validator.validate_error))
-        spinbox = ttk.Spinbox(self.frame, from_=0, to=1, increment=0.01, width=6, justify="center", validate="key",
+        spinbox = ttk.Spinbox(self.frame, from_=0, to=100, width=6, justify="center", validate="key",
                               validatecommand=(validation_command, '%P'))
         spinbox.set(ERROR_DEFAULT)
-        spinbox.grid(column=7, row=0, padx=(2, 15))
+        spinbox.grid(column=7, row=0, padx=(2, 1))
+        percentage_label = ttk.Label(self.frame, text="%")
+        percentage_label.grid(column=8, row=0, padx=(0, 15))
         if "error" not in required_parameters_names:
             spinbox.config(state="disabled")
         else:
@@ -92,12 +91,12 @@ class FairnessDefinitionsParameters:
 
     def create_minimum_samples_amount_spinbox(self, max_samples, required_parameters_names):
         label = ttk.Label(self.frame, text="Mínima cantidad de pruebas:")
-        label.grid(column=8, row=0)
+        label.grid(column=9, row=0)
         validation_command = (self.frame.register(input_validator.validate_minimum_samples_amount))
         spinbox = ttk.Spinbox(self.frame, from_=1, to=max_samples, width=7, justify="center", validate="key",
                               validatecommand=(validation_command, '%P', max_samples))
         spinbox.set(MINIMUM_SAMPLES_AMOUNT_DEFAULT)
-        spinbox.grid(column=9, row=0, padx=(2, 15))
+        spinbox.grid(column=10, row=0, padx=(2, 15))
         if "minimum_samples_amount" not in required_parameters_names:
             spinbox.config(state="disabled")
         else:
@@ -105,12 +104,12 @@ class FairnessDefinitionsParameters:
 
     def create_decimals_spinbox(self, required_parameters_names):
         label = ttk.Label(self.frame, text="Decimales probabilidad:")
-        label.grid(column=10, row=0)
+        label.grid(column=11, row=0)
         validation_command = (self.frame.register(input_validator.validate_decimals))
         spinbox = ttk.Spinbox(self.frame, from_=0, to=5, width=3, justify="center", validate="key",
                               validatecommand=(validation_command, '%P'))
         spinbox.set(DECIMALS_DEFAULT)
-        spinbox.grid(column=11, row=0, padx=(2, 15))
+        spinbox.grid(column=12, row=0, padx=(2, 15))
         if "decimals" not in required_parameters_names:
             spinbox.config(state="disabled")
         else:

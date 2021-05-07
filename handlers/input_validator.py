@@ -27,7 +27,7 @@ def validate_maximum_acceptable_difference(str_value):
 
 
 def validate_error(str_value):
-    return validate_float(str_value, 2)
+    return validate_int(str_value, 0, 100)
 
 
 def validate_minimum_samples_amount(str_value, max_amount):
