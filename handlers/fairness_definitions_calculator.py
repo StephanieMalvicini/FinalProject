@@ -1,6 +1,6 @@
 import sys
 
-from exceptions.invalid_decision_algorithm_parameters import InvalidDecisionAlgorithmParameters
+from exceptions.decision_algorithm import InvalidDecisionAlgorithmParameters
 from fairness_definitions.discrimination_basics import calculate_basic_metrics, \
     create_positives_negatives_tables, create_probabilities_table
 from handlers import fairness_definitions_adapter

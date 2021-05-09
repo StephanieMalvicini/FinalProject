@@ -1,7 +1,7 @@
 parameter_name,display_name,tooltip,float,int
 maximum_acceptable_difference,Diferencia aceptable,Se permite una diferencia aceptable al comparar dos probabilidades,yes,
 confidence,Confianza,Confianza,,yes
-error,Margen de error,Margen de error aceptable,yes,
+error,Margen de error,Margen de error aceptable,,yes
 minimum_samples_amount,Mínima cantidad de pruebas,Cantidad de pruebas mínimas a realizar antes de otorgar una respuesta,,yes
 legitimate_attributes_list,Atributos legítimos,Lista de atributos que explican la salida y evitan discriminación no deseada,,
 decimals,Cantidad de decimales,Cantidad de decimales detrás de la coma a utilizar para las probabilidades,,yes

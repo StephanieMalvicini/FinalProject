@@ -30,10 +30,10 @@ def causal_discrimination_aux(parameters, parameters_display_names):
                                                       parameters["prediction_handler"])
     result = Result(percentage <= MAXIMUM_FAILING_PERCENTAGE)
     result.add_element(SingleElement(parameters_display_names["confidence"], "{}%".format(parameters["confidence"])))
-    result.add_element(SingleElement(parameters_display_names["error"], "{}%".format(parameters["error"])))
     result.add_element(SingleElement(parameters_display_names["minimum_samples_amount"],
                                      parameters["minimum_samples_amount"]))
-    result.add_element(SingleElement(PERCENTAGE_NOT_SATISFIES, percentage * 100))
+    result.add_element(SingleElement(PERCENTAGE_NOT_SATISFIES,
+                                     "({} ± {})%".format(round(percentage * 100, 2), parameters["error"])))
     # arrange attributes so the ones used in the descriptions goes first
     sorted_columns = list(parameters["descriptions"][0].keys())
     sorted_columns.insert(0, "PredictedOutcome")
@@ -143,10 +143,10 @@ def fairness_through_awareness_aux(parameters, parameters_display_names):
                                                            parameters["minimum_samples_amount"])
     result = Result(percentage <= MAXIMUM_FAILING_PERCENTAGE)
     result.add_element(SingleElement(parameters_display_names["confidence"], "{}%".format(parameters["confidence"])))
-    result.add_element(SingleElement(parameters_display_names["error"], "{}%".format(parameters["error"])))
     result.add_element(SingleElement(parameters_display_names["minimum_samples_amount"],
                                      parameters["minimum_samples_amount"]))
-    result.add_element(SingleElement(PERCENTAGE_NOT_SATISFIES, percentage * 100))
+    result.add_element(SingleElement(PERCENTAGE_NOT_SATISFIES,
+                                     "({} ± {})%".format(round(percentage * 100, 2), parameters["error"])))
     result.add_element(SingleElement("Casos que no cumplen", len(failing_cases)))
     """for case in failing_cases:
         result.add_element(SingleElement("Sujeto 1", format_descriptions(case.individual1.to_dict())))

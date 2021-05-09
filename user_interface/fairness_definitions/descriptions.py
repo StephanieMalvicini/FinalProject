@@ -1,7 +1,7 @@
 from tkinter import ttk
 import tkinter as tk
 
-from exceptions.parameter_not_defined import ParameterNotDefined
+from exceptions.parameters import ParameterNotDefined
 
 AMOUNT_PER_ROW = 6
 ERROR_TITLE = "Ningún atributo para las descripciones seleccionado"

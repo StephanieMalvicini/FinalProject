@@ -7,8 +7,7 @@ import tkinter.font as font
 from tkinter import ttk, filedialog
 
 from decision_algorithms import interfaces
-from exceptions.invalid_decision_algorithm_class import InvalidDecisionAlgorithmFile
-from exceptions.value_already_exists import ValueAlreadyExists
+from exceptions.decision_algorithm import InvalidDecisionAlgorithmFile, ValueAlreadyExists
 from handlers.decision_algorithm_handler import DecisionAlgorithmHandler
 from user_interface.images import DecisionAlgorithmsEditorImages
 

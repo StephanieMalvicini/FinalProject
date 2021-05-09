@@ -5,8 +5,7 @@ import sys
 
 import pandas as pd
 
-from exceptions.invalid_decision_algorithm_parameters import InvalidDecisionAlgorithmParameters
-from exceptions.value_already_exists import ValueAlreadyExists
+from exceptions.decision_algorithm import InvalidDecisionAlgorithmParameters, ValueAlreadyExists, InvalidModuleName
 
 DECISION_ALGORITHMS_FILENAME = "decision_algorithms/decision_algorithms.csv"
 
@@ -28,7 +27,10 @@ class DecisionAlgorithmHandler:
         full_path = decision_algorithm["full_path"]
         file_name = os.path.basename(full_path)
         sys.path.insert(1, full_path[0:-len(file_name)])
-        module = importlib.import_module(file_name[0:-3])
+        try:
+            module = importlib.import_module(file_name[0:-3])
+        except ModuleNotFoundError:
+            raise InvalidModuleName()
         decision_algorithm = getattr(module, class_name)
         try:
             return decision_algorithm(*decision_algorithm_params)

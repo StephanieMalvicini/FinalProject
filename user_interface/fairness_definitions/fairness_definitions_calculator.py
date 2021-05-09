@@ -1,9 +1,8 @@
-import sys
 import tkinter as tk
 from tkinter import ttk
 
-from exceptions.invalid_decision_algorithm_parameters import InvalidDecisionAlgorithmParameters
-from exceptions.parameter_not_defined import ParameterNotDefined
+from exceptions.decision_algorithm import InvalidDecisionAlgorithmParameters, InvalidModuleName
+from exceptions.parameters import ParameterNotDefined
 from handlers.dataset_handler import DatasetHandler
 from handlers.descriptions_calculator import get_descriptions
 from handlers.fairness_definitions_calculator import FairnessDefinitionsCalculator
@@ -67,28 +66,34 @@ class FairnessDefinitionsCalculatorUI:
 
     def update_handlers(self, filename, outcome_name, test_size, decision_algorithm_name):
         updated = False
+        dataset_handler = self.dataset_handler
         if self.last_used_values["filename"] != filename or self.last_used_values["outcome_name"] != outcome_name or \
                 self.last_used_values["test_size"] != test_size:
-            # try:
-            self.dataset_handler = DatasetHandler(filename, outcome_name, test_size)
+            dataset_handler = DatasetHandler(filename, outcome_name, test_size)
             updated = True
         if self.last_used_values["decision_algorithm_name"] != decision_algorithm_name or updated:
-            attributes, outcomes = self.dataset_handler.get_training_dataset()
-            decision_algorithm = self.dataset_parameters.decision_algorithm_handler. \
-                create_decision_algorithm(decision_algorithm_name, attributes, outcomes)
-            updated = True
+            attributes, outcomes = dataset_handler.get_training_dataset()
+            try:
+                decision_algorithm = self.dataset_parameters.decision_algorithm_handler. \
+                    create_decision_algorithm(decision_algorithm_name, attributes, outcomes)
+                updated = True
+            except InvalidDecisionAlgorithmParameters as exception:
+                self.dialog.show_error_with_details(exception.message, exception.original_error)
+                return False
+            except InvalidModuleName as exception:
+                self.dialog.show_error(exception.title, exception.message)
+                return False
         else:
             decision_algorithm = self.prediction_handler.decision_algorithm
         if updated:
-            attributes_test, _ = self.dataset_handler.get_testing_dataset()
+            attributes_test, _ = dataset_handler.get_testing_dataset()
             self.prediction_handler = PredictionHandler(decision_algorithm, attributes_test)
             self.parameters_handler = \
-                FairnessDefinitionsParametersHandler(self.prediction_handler, self.dataset_handler)
+                FairnessDefinitionsParametersHandler(self.prediction_handler, dataset_handler)
             self.calculator = None
         self.last_used_values = {"filename": filename, "outcome_name": outcome_name, "test_size": test_size,
                                  "decision_algorithm_name": decision_algorithm_name}
-        # except Exception:
-        # self.dialog.show_error_with_details(UNEXPECTED_ERROR_TITLE, sys.exc_info())
+        self.dataset_handler = dataset_handler
         return updated
 
     def calculate(self, selected_definitions):

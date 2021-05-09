@@ -5,7 +5,7 @@ from math import ceil
 from numpy import number, issubdtype
 from tkinter import ttk
 
-from exceptions.parameter_not_defined import ParameterNotDefined
+from exceptions.parameters import ParameterNotDefined
 from handlers import input_validator
 from user_interface.images import LegitimateAttributesImages
 
