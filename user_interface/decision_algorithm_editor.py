@@ -6,9 +6,10 @@ import tkinter as tk
 import tkinter.font as font
 from tkinter import ttk, filedialog
 
+from databases import decision_algorithms
 from decision_algorithms import interfaces
+from entities.decision_algorithm import DecisionAlgorithm
 from exceptions.decision_algorithm import InvalidDecisionAlgorithmFile, ValueAlreadyExists
-from handlers.decision_algorithm_handler import DecisionAlgorithmHandler
 from user_interface.images import DecisionAlgorithmsEditorImages
 
 FILE_ERROR_MESSAGE = "El archivo seleccionado es inválido"
@@ -23,7 +24,7 @@ class DecisionAlgorithmEditor:
         self.frame.pack(pady=(50, 10))
         self.dialog = dialog
         self.images = DecisionAlgorithmsEditorImages()
-        self.decision_algorithm_handler = DecisionAlgorithmHandler()
+        self.row = 2
         self.interface_classes_names = [name for (name, _) in inspect.getmembers(interfaces, inspect.isclass)]
         self.create_header()
         self.filename_text = self.create_file_selector()
@@ -111,19 +112,17 @@ class DecisionAlgorithmEditor:
         else:
             try:
                 class_name = self.class_combobox.get()
-                decision_algorithm_data = \
-                    {"display_name": display_name, "class_name": class_name, "full_path": self.frame.filename}
-                self.decision_algorithm_handler.add_decision_algorithm(decision_algorithm_data)
-                row = len(self.decision_algorithm_handler.decision_algorithms) + 2
-                DecisionAlgorithmRow(self.frame, row, self.decision_algorithm_handler, decision_algorithm_data,
-                                     self.images.delete)
+                decision_algorithm = DecisionAlgorithm(display_name, class_name, self.frame.filename)
+                decision_algorithms.insert(decision_algorithm)
+                DecisionAlgorithmRow(self.frame, self.row, decision_algorithm, self.images.delete)
+                self.row += 1
             except ValueAlreadyExists as e:
                 self.dialog.show_error(e.title, e.message)
 
     def create_decision_algorithm_rows(self):
-        for i, decision_algorithm in enumerate(self.decision_algorithm_handler.get_decision_algorithms()):
-            DecisionAlgorithmRow(self.frame, i + 2, self.decision_algorithm_handler, decision_algorithm,
-                                 self.images.delete)
+        for decision_algorithm in decision_algorithms.get_all():
+            DecisionAlgorithmRow(self.frame, self.row, decision_algorithm, self.images.delete)
+            self.row += 1
 
     def destroy(self):
         self.frame.destroy()
@@ -131,13 +130,12 @@ class DecisionAlgorithmEditor:
 
 class DecisionAlgorithmRow:
 
-    def __init__(self, frame, row, decision_algorithm_handler, decision_algorithm_data, image):
+    def __init__(self, frame, row, decision_algorithm, image):
         self.frame = frame
         self.row = row
-        self.decision_algorithm_handler = decision_algorithm_handler
-        self.full_path_label = self.create_full_path_label(decision_algorithm_data["full_path"])
-        self.display_name_label = self.create_display_name_label(decision_algorithm_data["display_name"])
-        self.class_name_label = self.create_class_name_label(decision_algorithm_data["class_name"])
+        self.full_path_label = self.create_full_path_label(decision_algorithm.full_path)
+        self.display_name_label = self.create_display_name_label(decision_algorithm.display_name)
+        self.class_name_label = self.create_class_name_label(decision_algorithm.class_name)
         self.delete_button = self.create_delete_button(image)
 
     def create_full_path_label(self, full_path):
@@ -162,11 +160,10 @@ class DecisionAlgorithmRow:
 
     def delete(self):
         display_name = self.display_name_label.cget("text")
-        self.decision_algorithm_handler.delete_decision_algorithm(display_name)
+        decision_algorithms.delete(display_name)
         self.full_path_label.destroy()
         self.display_name_label.destroy()
         self.class_name_label.destroy()
         self.delete_button.destroy()
 
-# no copiar el archivo sino que usar el path entero (tendria que crear un try catch en la creacion del objeto por si mueven o cambian algo)
 

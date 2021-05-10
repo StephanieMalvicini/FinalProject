@@ -3,8 +3,8 @@ from tkinter import ttk
 from tkinter import filedialog
 
 from constants.outcome import NO_OUTCOME_VALUE
+from databases import decision_algorithms
 from handlers import input_validator
-from handlers.decision_algorithm_handler import DecisionAlgorithmHandler
 from handlers.outcome_handler import OutcomeHandler
 
 NO_OUTCOME_DISPLAY_NAME = "Sin salida"
@@ -19,15 +19,14 @@ class DatasetParametersContainer:
         self.outcome_handler = OutcomeHandler()
         self.frame = \
             ttk.LabelFrame(main_frame, text="  Conjunto de datos y clasificador/algoritmo de decisión ", width=width)
-        self.decision_algorithm_handler = DecisionAlgorithmHandler()
         self.dataset_parameters = DatasetParameters(self.frame, self.outcome_handler,
-                                                    self.decision_algorithm_handler.get_decision_algorithms_names(),
+                                                    decision_algorithms.get_all_display_names(),
                                                     confirmed_callback, dialog)
 
 
 class DatasetParameters:
 
-    def __init__(self, frame, outcome_handler, decision_algorithms, confirmed_callback, dialog):
+    def __init__(self, frame, outcome_handler, decision_algorithms_display_names, confirmed_callback, dialog):
         self.frame = ttk.Frame(frame)
         self.frame.pack(side=tk.LEFT, padx=10, pady=(7, 10))
         self.outcome_handler = outcome_handler
@@ -37,7 +36,7 @@ class DatasetParameters:
         self.outcome_name_combobox = self.create_outcome_name_combobox()
         self.positive_outcome_combobox = self.create_positive_outcome_combobox()
         self.test_size_spinbox = self.create_test_size_spinbox()
-        self.decision_algorithm_combobox = self.create_decision_algorithm_combobox(decision_algorithms)
+        self.decision_algorithm_combobox = self.create_decision_algorithm_combobox(decision_algorithms_display_names)
         self.confirm_button = self.create_confirm_button(frame)
 
     def create_file_selector(self):
@@ -90,11 +89,11 @@ class DatasetParameters:
         percentage_label.grid(column=9, row=0, padx=(0, 15))
         return spinbox
 
-    def create_decision_algorithm_combobox(self, decision_algorithms):
-        decision_algorithms.sort()
+    def create_decision_algorithm_combobox(self, display_names):
+        display_names.sort()
         label = ttk.Label(self.frame, text="Nombre:")
         label.grid(column=10, row=0)
-        combobox = ttk.Combobox(self.frame, state="readonly", values=decision_algorithms, justify="center")
+        combobox = ttk.Combobox(self.frame, state="readonly", values=display_names, justify="center")
         combobox.current(0)
         combobox.grid(column=11, row=0, padx=(2, 15))
         return combobox
@@ -105,7 +104,7 @@ class DatasetParameters:
         button.pack(side=tk.RIGHT, padx=(0, 10), pady=(7, 10))
         return button
 
-    def outcome_name_selected(self, *args):
+    def outcome_name_selected(self, _):
         outcome_name = self.outcome_name_combobox.get()
         if outcome_name == NO_OUTCOME_DISPLAY_NAME:
             outcome_name = NO_OUTCOME_VALUE
@@ -123,7 +122,7 @@ class DatasetParameters:
         self.outcome_name_combobox.config(state="readonly")
         self.outcome_handler.set_outcome_name(NO_OUTCOME_VALUE)
 
-    def positive_outcome_selected(self, *args):
+    def positive_outcome_selected(self, _):
         self.outcome_handler.set_outcome_values(self.positive_outcome_combobox.get())
 
     def update_positive_outcome_combobox(self):

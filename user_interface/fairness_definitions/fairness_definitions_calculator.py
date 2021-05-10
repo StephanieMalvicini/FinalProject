@@ -3,6 +3,7 @@ from tkinter import ttk
 
 from exceptions.decision_algorithm import InvalidDecisionAlgorithmParameters, InvalidModuleName
 from exceptions.parameters import ParameterNotDefined
+from handlers import decision_algorithm_creator
 from handlers.dataset_handler import DatasetHandler
 from handlers.descriptions_calculator import get_descriptions
 from handlers.fairness_definitions_calculator import FairnessDefinitionsCalculator
@@ -72,10 +73,9 @@ class FairnessDefinitionsCalculatorUI:
             dataset_handler = DatasetHandler(filename, outcome_name, test_size)
             updated = True
         if self.last_used_values["decision_algorithm_name"] != decision_algorithm_name or updated:
-            attributes, outcomes = dataset_handler.get_training_dataset()
+            training_data = dataset_handler.get_training_dataset()
             try:
-                decision_algorithm = self.dataset_parameters.decision_algorithm_handler. \
-                    create_decision_algorithm(decision_algorithm_name, attributes, outcomes)
+                decision_algorithm = decision_algorithm_creator.get(decision_algorithm_name, *training_data)
                 updated = True
             except InvalidDecisionAlgorithmParameters as exception:
                 self.dialog.show_error_with_details(exception.message, exception.original_error)
@@ -115,7 +115,7 @@ class FairnessDefinitionsCalculatorUI:
             self.dialog.show_error(e.error_title, e.message)
         except InvalidDecisionAlgorithmParameters as e:
             self.dialog.show_error_with_details(e.message, e.original_error)
-        #except Exception:
+        # except Exception:
         #    self.dialog.show_error_with_details(UNEXPECTED_ERROR_TITLE, sys.exc_info())
 
     def destroy(self):
