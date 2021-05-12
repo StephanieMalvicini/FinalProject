@@ -18,6 +18,7 @@ def fairness_through_awareness(testing_set, decision_algorithm, confidence, erro
     individuals_amount = len(testing_set.index)
     failing_cases = list()
     verified_cases = 0
+    confidence_reached = False
     for i in range(individuals_amount-1):
         for first in range(i+1, individuals_amount):
             verified_cases += 1
@@ -34,8 +35,9 @@ def fairness_through_awareness(testing_set, decision_algorithm, confidence, erro
                 current_error = statistical_constants.CONFIDENCE_Z_VALUES[confidence] * math.sqrt(
                     p * (1 - p) / verified_cases)
                 if current_error < error:
-                    return p, failing_cases
-    return not_satisfies / verified_cases, failing_cases
+                    confidence_reached = True
+                    return p, failing_cases, confidence_reached
+    return not_satisfies / verified_cases, failing_cases, confidence_reached
 
 
 def clone_and_remove_added_attributes(individual):

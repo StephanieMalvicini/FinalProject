@@ -12,12 +12,11 @@ class FairnessDefinitionsContainer:
         self.calculate_callback = calculate_callback
         self.dialog = dialog
 
-    def update(self, available_definitions, all_definitions_display_names, testing_set):
+    def update(self, testing_set, all_definitions, available_definitions_names): #sacar el testing set
         if self.fairness_definitions:
             self.fairness_definitions.destroy()
-        self.fairness_definitions = FairnessDefinitionsList(self.frame, available_definitions, self.dialog,
-                                                            all_definitions_display_names, self.calculate_callback,
-                                                            testing_set)
+        self.fairness_definitions = FairnessDefinitionsList(self.frame, self.dialog, self.calculate_callback,
+                                                            testing_set, all_definitions, available_definitions_names)
 
     def show_result(self, results, plots):
         self.fairness_definitions.show_result(results, plots)
@@ -25,8 +24,8 @@ class FairnessDefinitionsContainer:
 
 class FairnessDefinitionsList:
 
-    def __init__(self, parent_frame, available_definitions, dialog, all_definitions_display_names, calculate_callback,
-                 testing_set):
+    def __init__(self, parent_frame, dialog, calculate_callback, testing_set,
+                 all_definitions, available_definitions_names):
         self.dialog = dialog
         self.calculate_callback = calculate_callback
         self.buttons_frame = ttk.Frame(parent_frame)
@@ -38,7 +37,7 @@ class FairnessDefinitionsList:
         self.calculate_button = self.create_calculate_button()
         self.frame = ttk.Frame(parent_frame)
         self.frame.pack(anchor=tk.W, fill=tk.X, padx=10, pady=(5, 10))
-        self.fairness_definitions = self.create_check_buttons(available_definitions, all_definitions_display_names)
+        self.fairness_definitions_items = self.create_check_buttons(all_definitions, available_definitions_names)
 
     def create_select_all_button(self):
         button = ttk.Button(self.buttons_frame, text="Seleccionar todas", width=20, command=self.select_all)
@@ -46,7 +45,7 @@ class FairnessDefinitionsList:
         return button
 
     def select_all(self):
-        for definition in self.fairness_definitions:
+        for definition in self.fairness_definitions_items:
             definition.value.set(True)
 
     def create_unselect_all_button(self):
@@ -56,7 +55,7 @@ class FairnessDefinitionsList:
         return button
 
     def unselect_all(self):
-        for definition in self.fairness_definitions:
+        for definition in self.fairness_definitions_items:
             definition.value.set(False)
 
     def create_plots_buttons(self):
@@ -77,26 +76,23 @@ class FairnessDefinitionsList:
         return button
 
     def calculate(self):
-        selected_definitions = [definition.name for definition in self.fairness_definitions if definition.value.get()]
+        selected_definitions = [item.definition_name for item in self.fairness_definitions_items if item.is_selected()]
         if len(selected_definitions) > 0:
             self.calculate_callback(selected_definitions)
 
-    def create_check_buttons(self, available_definitions, all_definitions_display_names):
-        fairness_definitions = list()
-        all_definitions_names = list(all_definitions_display_names.keys())
-        all_definitions_names.sort()
-        for definition_name in all_definitions_names:
-            display_name = all_definitions_display_names[definition_name]
+    def create_check_buttons(self, all_definitions, available_definitions_names):
+        check_buttons = list()
+        for definition in all_definitions:
             value = tk.BooleanVar()
             value.set(False)
-            if definition_name in available_definitions:
-                fairness_definitions.append(
-                    FairnessDefinition(definition_name, display_name, self.frame, value))
+            if definition.name in available_definitions_names:
+                check_buttons.append(
+                    FairnessDefinition(definition, self.frame, value))
             else:
-                check_button = ttk.Checkbutton(self.frame, text="{} (no disponible)".format(display_name),
+                check_button = ttk.Checkbutton(self.frame, text="{} (no disponible)".format(definition.display_name),
                                                var=value, state="disabled")
                 check_button.pack(anchor=tk.W, fill=tk.X, pady=(2, 0))
-        return fairness_definitions
+        return check_buttons
 
     def destroy(self):
         self.buttons_frame.destroy()
@@ -104,9 +100,9 @@ class FairnessDefinitionsList:
 
     def show_result(self, results, plots):
         self.configure_plots(plots)
-        for definition in self.fairness_definitions:
-            if definition.name in results.keys():
-                definition.add_result(results[definition.name])
+        for item in self.fairness_definitions_items:
+            if item.definition_name in results.keys():
+                item.add_result(results[item.definition_name])
 
     def configure_plots(self, plots):
         if plots.has_basic_metrics_plot():
@@ -117,13 +113,13 @@ class FairnessDefinitionsList:
 
 class FairnessDefinition:
 
-    def __init__(self, definition_name, display_name, parent_frame, value):
-        self.name = definition_name
+    def __init__(self, definition, parent_frame, value):
+        self.definition_name = definition.name
         self.value = value
         self.images = FairnessDefinitionResultImages()
         self.frame = ttk.Frame(parent_frame)
         self.frame.pack(anchor=tk.W, fill=tk.X)
-        self.image_label, self.name_and_icon_frame = self.create_name_and_icon(display_name)
+        self.image_label, self.name_and_icon_frame = self.create_name_and_icon(definition.display_name)
         self.show_more_button = self.create_show_more_button()
         self.result_frame = ttk.Frame(self.frame)
 
@@ -163,3 +159,6 @@ class FairnessDefinition:
         else:
             image = self.images.failed
         self.image_label.configure(image=image)
+
+    def is_selected(self):
+        return self.value.get()

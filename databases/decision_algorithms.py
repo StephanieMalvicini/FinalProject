@@ -25,6 +25,7 @@ def get(display_name):
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM decision_algorithms WHERE display_name=?", (display_name,))
     data = cursor.fetchone()
+    connection.close()
     return DecisionAlgorithm(data[0], data[1], data[2])
 
 
@@ -33,6 +34,7 @@ def get_all():
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM decision_algorithms")
     data_list = cursor.fetchall()
+    connection.close()
     all_items = list()
     for data in data_list:
         all_items.append(DecisionAlgorithm(data[0], data[1], data[2]))
@@ -44,7 +46,8 @@ def get_all_display_names():
     cursor = connection.cursor()
     cursor.execute("SELECT display_name FROM decision_algorithms")
     all_names = cursor.fetchall()
-    return all_names
+    connection.close()
+    return [name[0] for name in all_names]
 
 
 def delete(display_name):

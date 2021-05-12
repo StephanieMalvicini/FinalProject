@@ -19,6 +19,9 @@ class DescriptionsContainer:
             self.descriptions.destroy()
         self.descriptions = Descriptions(self.frame, attributes_values)
 
+    def get_selected(self):
+        return self.descriptions.get_descriptions()
+
 
 class Descriptions:
 

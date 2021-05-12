@@ -15,6 +15,7 @@ def causal_discrimination(attributes_test, descriptions, confidence, error, mini
     fails_amount = 0
     test_suite = pd.DataFrame()
     samples_amount = 0
+    confidence_reached = False
     for i in range(len(testing_set.index)):
         individual = testing_set.iloc[i]
         if not (test_suite == individual).all(1).any():
@@ -37,8 +38,9 @@ def causal_discrimination(attributes_test, descriptions, confidence, error, mini
                 current_error = statistical_constants.CONFIDENCE_Z_VALUES[confidence] * math.sqrt(
                     p * (1 - p) / samples_amount)
                 if current_error < error:
+                    confidence_reached = True
                     break
-    return fails_amount / samples_amount, test_suite
+    return fails_amount / samples_amount, test_suite, confidence_reached
 
 
 def create_similar_individual(individual, description):

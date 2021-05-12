@@ -1,9 +1,11 @@
 import sys
 
+from databases import parameters
 from exceptions.decision_algorithm import InvalidDecisionAlgorithmParameters
 from fairness_definitions.discrimination_basics import calculate_basic_metrics, \
     create_positives_negatives_tables, create_probabilities_table
 from handlers import fairness_definitions_adapter
+from handlers.parameters_results import ParametersResult
 
 
 class FairnessDefinitionsCalculator:
@@ -31,11 +33,12 @@ class FairnessDefinitionsCalculator:
             raise InvalidDecisionAlgorithmParameters(sys.exc_info())
         return attributes_test
 
-    def calculate(self, fairness_definitions, parameters_display_names):
+    def calculate(self, fairness_definitions):
         results = dict()
+        parameters_result = ParametersResult(parameters.get_all())
         for definition_name in fairness_definitions:
             fairness_definition_method = getattr(fairness_definitions_adapter, "{}_aux".format(definition_name))
-            results[definition_name] = fairness_definition_method(self.params, parameters_display_names)
+            results[definition_name] = fairness_definition_method(self.params, parameters_result)
         return results
 
     def create_parameters(self):

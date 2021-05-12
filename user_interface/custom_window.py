@@ -5,7 +5,7 @@ import tkinter.font as font
 
 from user_interface.decision_algorithm_editor import DecisionAlgorithmEditor
 from user_interface.dialogs import CustomDialog
-from user_interface.fairness_definitions.fairness_definitions_calculator import FairnessDefinitionsCalculatorUI
+from user_interface.fairness_definitions.calculator import FairnessDefinitionsCalculatorUI
 from user_interface.images import MainWindowImages
 from user_interface.scrolled_frame import VerticalScrolledFrame
 

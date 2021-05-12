@@ -19,30 +19,26 @@ class FairnessDefinitionsParametersContainer:
         self.fairness_definitions_parameters = None
         self.dialog = dialog
 
-    def update(self, dataset_handler, required_parameters_names):
+    def update(self, attributes_values, required_parameters_names):
         if self.fairness_definitions_parameters:
             self.fairness_definitions_parameters.destroy()
         self.fairness_definitions_parameters = \
-            FairnessDefinitionsParameters(self.frame,
-                                          dataset_handler.get_testing_dataset_samples_amount(),
-                                          dataset_handler.get_attributes_values(),
-                                          required_parameters_names,
-                                          self.dialog)
+            FairnessDefinitionsParameters(self.frame, attributes_values, required_parameters_names, self.dialog)
 
-    def get_parameters_values(self, required_parameters):
-        return self.fairness_definitions_parameters.get_parameters_values(required_parameters)
+    def get_parameters_values(self, required_parameters_names):
+        return self.fairness_definitions_parameters.get_parameters_values(required_parameters_names)
 
 
 class FairnessDefinitionsParameters:
 
-    def __init__(self, parent_frame, max_samples, attributes_values, required_parameters_names, dialog):
+    def __init__(self, parent_frame, attributes_values, required_parameters_names, dialog):
         self.frame = ttk.Frame(parent_frame)
         self.frame.pack(anchor=tk.W, padx=10, pady=(7, 10))
         self.required_parameters_widgets = dict()
         self.create_maximum_acceptable_difference_spinbox(required_parameters_names)
         self.create_confidence_combobox(required_parameters_names)
         self.create_error_spinbox(required_parameters_names)
-        self.create_minimum_samples_amount_spinbox(max_samples, required_parameters_names)
+        self.create_minimum_samples_amount_spinbox(required_parameters_names)
         self.create_decimals_spinbox(required_parameters_names)
         self.legitimate_attributes_list_frame = \
             self.create_legitimate_attributes_list(parent_frame, attributes_values, dialog, required_parameters_names)
@@ -89,12 +85,12 @@ class FairnessDefinitionsParameters:
         else:
             self.required_parameters_widgets["error"] = spinbox
 
-    def create_minimum_samples_amount_spinbox(self, max_samples, required_parameters_names):
+    def create_minimum_samples_amount_spinbox(self, required_parameters_names):
         label = ttk.Label(self.frame, text="Mínima cantidad de pruebas:")
         label.grid(column=9, row=0)
         validation_command = (self.frame.register(input_validator.validate_minimum_samples_amount))
-        spinbox = ttk.Spinbox(self.frame, from_=1, to=max_samples, width=7, justify="center", validate="key",
-                              validatecommand=(validation_command, '%P', max_samples))
+        spinbox = ttk.Spinbox(self.frame, from_=1, width=7, justify="center", validate="key",
+                              validatecommand=(validation_command, '%P'))
         spinbox.set(MINIMUM_SAMPLES_AMOUNT_DEFAULT)
         spinbox.grid(column=10, row=0, padx=(2, 15))
         if "minimum_samples_amount" not in required_parameters_names:
@@ -124,9 +120,9 @@ class FairnessDefinitionsParameters:
             self.required_parameters_widgets["legitimate_attributes_list"] = legitimate_attributes_list
         return frame
 
-    def get_parameters_values(self, required_parameters):
+    def get_parameters_values(self, required_parameters_names):
         parameters_values = dict()
-        for parameter in required_parameters:
+        for parameter in required_parameters_names:
             parameters_values[parameter] = self.required_parameters_widgets[parameter].get()
         return parameters_values
 

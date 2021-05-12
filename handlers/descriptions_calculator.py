@@ -1,7 +1,7 @@
 from itertools import product
 
 
-def get_descriptions(selected_attributes):
+def get(selected_attributes):
     combinations = product(*selected_attributes.values())
     descriptions = list()
     for combination in combinations:
