@@ -12,7 +12,11 @@ class ParametersResult:
         self.display_names["predicted_probability"] = "ProbabilidadPredicha"
         self.display_names["confidence_reached"] = "alcanzada"
         self.display_names["confidence_not_reached"] = "no alcanzada"
-        self.display_names["failing_cases"] = "Casos donde falla"
+        self.display_names["failing_cases"] = "Cantidad casos donde falla"
+        self.display_names["failing_cases_table"] = "Casos donde falla"
+        self.display_names["individual"] = "Sujeto"
+        self.display_names["individuals_distance"] = "Distancia entre sujetos"
+        self.display_names["outcomes_distance"] = "Distancia entre salidas"
         self.display_names["satisfies"] = "Satisface"
         self.display_names["not_satisfies"] = "No satisface"
         self.display_names["result"] = "Resultado"
@@ -57,13 +61,15 @@ class ParametersResult:
         result.add_element(SingleElement(self.display_names["maximum_acceptable_difference"], value))
 
     def add_failing_cases(self, result, failing_cases):
+        if len(failing_cases) > 0:
+            column_names = ["{} 1".format(self.display_names["individual"]),
+                            "{} 2".format(self.display_names["individual"]),
+                            self.display_names["individuals_distance"],
+                            self.display_names["outcomes_distance"]]
+            data = [[case.individual1.name, case.individual2.name, case.individuals_distance, case.outcomes_distance]
+                    for case in failing_cases]
+            result.add_element(TableElement(self.display_names["failing_cases_table"], column_names, data))
         result.add_element(SingleElement(self.display_names["failing_cases"], len(failing_cases)))
-        """for case in failing_cases:
-            result.add_element(SingleElement("Sujeto 1", format_descriptions(case.individual1.to_dict())))
-            result.add_element(SingleElement("Sujeto 2", format_descriptions(case.individual2.to_dict())))
-            result.add_element(SingleElement("Distancia entre sujetos", case.individuals_distance))
-            result.add_element(SingleElement("Distancia entre salidas", case.outcomes_distance))
-        """
 
     def add_probabilities_table(self, result, template, column_satisfies, descriptions, probabilities_table):
         row_descriptions = list()

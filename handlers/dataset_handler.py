@@ -54,4 +54,4 @@ class DatasetHandler:
         return self.outcome_name != NO_OUTCOME_VALUE
 
     def get_testing_set_to_show(self):
-        return self.__dataset.iloc[self.__attributes_test.index]
+        return self.__dataset.iloc[self.__attributes_test.index].sort_index()

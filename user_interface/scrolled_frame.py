@@ -1,3 +1,4 @@
+import platform
 from tkinter import ttk
 import tkinter as tk
 import functools
@@ -17,6 +18,7 @@ class VerticalScrolledFrame(ttk.Frame):
     * This comes from a different naming of the the scrollwheel 'button', on different systems.
     """
     def __init__(self, parent, *args, **kw):
+        self.os_name = platform.system()
 
         # track changes to the canvas and frame width and sync them,
         # also updating the scrollbar
@@ -33,31 +35,25 @@ class VerticalScrolledFrame(ttk.Frame):
                 # update the inner frame's width to fill the canvas
                 canvas.itemconfigure(interior_id, width=canvas.winfo_width())
 
-        """
-        This is linux code for scrolling the window, 
-        It has different buttons for scrolling the windows
-        """
         def _on_mousewheel(event, scroll):
-            canvas.yview_scroll(int(scroll), "units")
+            if self.os_name == "Windows":
+                canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+            else:
+                canvas.yview_scroll(int(scroll), "units")
 
         def _bind_to_mousewheel(event):
-            canvas.bind_all("<Button-4>", fp(_on_mousewheel, scroll=-1))
-            canvas.bind_all("<Button-5>", fp(_on_mousewheel, scroll=1))
+            if self.os_name == "Windows":
+                canvas.bind_all("<MouseWheel>", fp(_on_mousewheel, scroll=-1))
+            else:
+                canvas.bind_all("<Button-4>", fp(_on_mousewheel, scroll=-1))
+                canvas.bind_all("<Button-5>", fp(_on_mousewheel, scroll=1))
 
         def _unbind_from_mousewheel(event):
-            canvas.unbind_all("<Button-4>")
-            canvas.unbind_all("<Button-5>")
-
-
-        """
-        This is windows code for scrolling the Frame
-        def _on_mousewheel(event):
-            canvas.yview_scroll(int(-1*(event.delta/120)), "units")
-        def _bind_to_mousewheel(event):
-            canvas.bind_all("<MouseWheel>", _on_mousewheel)
-        def _unbind_from_mousewheel(event):
-            canvas.unbind_all("<MouseWheel>")
-        """
+            if self.os_name == "Windows":
+                canvas.unbind_all("<MouseWheel>")
+            else:
+                canvas.unbind_all("<Button-4>")
+                canvas.unbind_all("<Button-5>")
 
         ttk.Frame.__init__(self, parent, *args, **kw)
 

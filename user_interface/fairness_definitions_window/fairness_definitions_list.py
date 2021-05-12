@@ -4,10 +4,14 @@ from tkinter import filedialog
 from user_interface.images import FairnessDefinitionResultImages
 
 
+CONTAINER_NAME = "  Definiciones de fairness - cálculo  "
+NOT_AVAILABLE = "no disponible"
+
+
 class FairnessDefinitionsContainer:
 
     def __init__(self, main_frame, width, calculate_callback):
-        self.frame = ttk.LabelFrame(main_frame, text="  Definiciones de fairness - cálculo  ", height=300, width=width)
+        self.frame = ttk.LabelFrame(main_frame, text=CONTAINER_NAME, height=300, width=width)
         self.fairness_definitions = None
         self.calculate_callback = calculate_callback
 
@@ -21,6 +25,18 @@ class FairnessDefinitionsContainer:
         self.fairness_definitions.show_result(results, plots)
 
 
+class ButtonsDisplayNames:
+
+    def __init__(self):
+        self.select_all = "Seleccionar todas"
+        self.unselect_all = "Deseleccionar todas"
+        self.show_basic_metrics = "Ver métricas básicas"
+        self.show_probabilities_amount = "Ver cantidades probabilidad"
+        self.download_testing_set = "Descargar conjunto de pruebas"
+        self.save_as = "Guardar como"
+        self.calculate = "Calcular"
+
+
 class FairnessDefinitionsList:
 
     def __init__(self, parent_frame, calculate_callback, testing_set_downloader, all_definitions,
@@ -28,6 +44,7 @@ class FairnessDefinitionsList:
         self.buttons_frame = ttk.Frame(parent_frame)
         self.buttons_frame.pack(fill=tk.X, anchor=tk.NW, padx=10, pady=(7, 3))
         self.testing_set_downloader = testing_set_downloader
+        self.display_names = ButtonsDisplayNames()
         self.create_select_all_button()
         self.create_unselect_all_button()
         self.basic_metrics_plot_button, self.tables_plot_button = self.create_plots_buttons()
@@ -38,7 +55,7 @@ class FairnessDefinitionsList:
         self.fairness_definitions_items = self.create_check_buttons(all_definitions, available_definitions_names)
 
     def create_select_all_button(self):
-        button = ttk.Button(self.buttons_frame, text="Seleccionar todas", width=20, command=self.select_all)
+        button = ttk.Button(self.buttons_frame, text=self.display_names.select_all, width=20, command=self.select_all)
         button.pack(side=tk.LEFT, anchor=tk.NW, padx=(0, 10))
         return button
 
@@ -47,7 +64,7 @@ class FairnessDefinitionsList:
             definition.value.set(True)
 
     def create_unselect_all_button(self):
-        button = ttk.Button(self.buttons_frame, text="Deseleccionar todas", width=20,
+        button = ttk.Button(self.buttons_frame, text=self.display_names.unselect_all, width=20,
                             command=self.unselect_all)
         button.pack(side=tk.LEFT, anchor=tk.NW)
         return button
@@ -57,25 +74,28 @@ class FairnessDefinitionsList:
             definition.value.set(False)
 
     def create_plots_buttons(self):
-        basic_metrics_button = ttk.Button(self.buttons_frame, text="Ver métricas básicas", state="disabled")
+        basic_metrics_button = ttk.Button(self.buttons_frame, text=self.display_names.show_basic_metrics,
+                                          state="disabled")
         basic_metrics_button.pack(side=tk.RIGHT, anchor=tk.NE)
-        tables_button = ttk.Button(self.buttons_frame, text="Ver cantidades probabilidad", state="disabled")
+        tables_button = ttk.Button(self.buttons_frame, text=self.display_names.show_probabilities_amount,
+                                   state="disabled")
         tables_button.pack(side=tk.RIGHT, anchor=tk.NE, padx=2)
         return basic_metrics_button, tables_button
 
     def create_testing_set_button(self):
-        button = ttk.Button(self.buttons_frame, text="Descargar conjunto de pruebas",
+        button = ttk.Button(self.buttons_frame, text=self.display_names.download_testing_set,
                             command=self.open_filename_selector)
         button.pack(side=tk.RIGHT, anchor=tk.NE)
 
     def open_filename_selector(self):
-        filename = filedialog.asksaveasfilename(title="Guardar como", filetypes=(("CSV Files", "*.csv"),),
+        filename = filedialog.asksaveasfilename(title=self.display_names.save_as, filetypes=(("CSV Files", "*.csv"),),
                                                 defaultextension=".csv")
         if filename:
             self.testing_set_downloader.download_dataset(filename)
 
     def create_calculate_button(self, callback):
-        button = ttk.Button(self.buttons_frame, text="Calcular", width=10, command=lambda: self.calculate(callback))
+        button = ttk.Button(self.buttons_frame, text=self.display_names.calculate, width=10,
+                            command=lambda: self.calculate(callback))
         button.pack(side=tk.RIGHT, anchor=tk.NE, padx=(0, 5))
         return button
 
@@ -93,8 +113,9 @@ class FairnessDefinitionsList:
                 check_buttons.append(
                     FairnessDefinition(definition, self.frame, value))
             else:
-                check_button = ttk.Checkbutton(self.frame, text="{} (no disponible)".format(definition.display_name),
-                                               var=value, state="disabled")
+                check_button = \
+                    ttk.Checkbutton(self.frame, text="{} ({})".format(definition.display_name, NOT_AVAILABLE),
+                                    var=value, state="disabled")
                 check_button.pack(anchor=tk.W, fill=tk.X, pady=(2, 0))
         return check_buttons
 

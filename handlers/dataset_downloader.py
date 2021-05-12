@@ -4,4 +4,4 @@ class DatasetDownloader:
         self.dataset = dataset
 
     def download_dataset(self, path):
-        self.dataset.to_csv(path, index=False, header=True)
+        self.dataset.to_csv(path, index=True, header=True)

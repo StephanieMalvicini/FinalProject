@@ -1,16 +1,18 @@
-import os
 import tkinter as tk
 from tkinter import ttk
 import tkinter.font as font
 
 from user_interface.decision_algorithm_editor import DecisionAlgorithmEditor
 from user_interface.dialogs import CustomDialog
-from user_interface.fairness_definitions.calculator import FairnessDefinitionsCalculatorUI
+from user_interface.fairness_definitions_window.calculator import FairnessDefinitionsCalculatorUI
 from user_interface.images import MainWindowImages
 from user_interface.scrolled_frame import VerticalScrolledFrame
 
 TOTAL_WIDTH = 1300
 TOTAL_HEIGHT = 700
+WINDOW_TITLE = "Evaluador de fairness"
+ADD_DECISION_ALGORITHM = "Añadir \n clasificador/algoritmo \n de decisión"
+CALCULATE_FAIRNESS_DEFINITIONS = "Calcular \n definiciones \n de fairness"
 
 
 class CustomWindow:
@@ -19,7 +21,6 @@ class CustomWindow:
         self.window = tk.Tk()
 
         self.configure_window()
-        # self.style = self.configure_theme()
         self.dialog = self.create_custom_dialog()
         self.main_frame = self.create_main_frame()
         self.current_screen = None
@@ -33,29 +34,9 @@ class CustomWindow:
         self.window.mainloop()
 
     def configure_window(self):
-        self.window.title("Evaluador de fairness")
+        self.window.title(WINDOW_TITLE)
         self.window.iconbitmap("images/icon.ico")
         self.window.geometry("{}x{}".format(TOTAL_WIDTH, TOTAL_HEIGHT))
-
-    def configure_theme(self):
-        style = ttk.Style(self.window)
-        self.window.tk.eval("""
-                   set base_theme_dir {}/awthemes-10.3.0/
-
-                   package ifneeded awthemes 10.3.0 \
-                       [list source [file join $base_theme_dir awthemes.tcl]]
-                   package ifneeded colorutils 4.8 \
-                       [list source [file join $base_theme_dir colorutils.tcl]]
-                   package ifneeded awdark 7.11 \
-                       [list source [file join $base_theme_dir awdark.tcl]]
-                   package ifneeded awlight 7.6 \
-                       [list source [file join $base_theme_dir awlight.tcl]]
-                   """.format(os.getcwd().replace("\\", "/")))
-        self.window.tk.call("package", "require", "awdark")
-        self.window.tk.call("package", "require", "awlight")
-        # style.theme_use("awlight")
-        self.window.configure(bg=style.lookup("TFrame", "background"))
-        return style
 
     def create_custom_dialog(self):
         return CustomDialog(self.window)
@@ -82,7 +63,7 @@ class CustomWindow:
         return frame
 
     def create_add_decision_algorithm_button(self):
-        button = tk.Button(self.buttons_frame, text="Añadir \n clasificador/algoritmo \n de decisión", width=25,
+        button = tk.Button(self.buttons_frame, text=ADD_DECISION_ALGORITHM, width=25,
                            height=8, command=self.add_decision_algorithm_button, bg="white")
         button["font"] = font.Font(size=12)
         button.grid(column=1, row=0, sticky=tk.E, padx=(0, 150), pady=(70, 0))
@@ -93,7 +74,7 @@ class CustomWindow:
         self.current_screen = DecisionAlgorithmEditor(self.main_frame, self.dialog)
 
     def create_calculate_fairness_definitions_button(self):
-        button = tk.Button(self.buttons_frame, text="Calcular \n definiciones \n de fairness", width=25,
+        button = tk.Button(self.buttons_frame, text=CALCULATE_FAIRNESS_DEFINITIONS, width=25,
                            height=8, command=self.calculate_fairness_definitions, bg="white")
         button["font"] = font.Font(size=12)
         button.grid(column=1, row=1, sticky=tk.E, padx=(0, 150), pady=(20, 0))

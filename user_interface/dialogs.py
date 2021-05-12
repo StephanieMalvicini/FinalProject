@@ -8,7 +8,8 @@ from user_interface.tree_view import create_tree_view
 
 ERROR_TOTAL_WIDTH = 400
 ERROR_TOTAL_HEIGHT = 200
-
+SHOW_MORE = "Ver más"
+ERROR_TITLE = "Error"
 
 def show_error_detail(dialog, button, original_error):
     button.config(state="disabled")
@@ -19,7 +20,7 @@ def show_error_detail(dialog, button, original_error):
 
 
 def create_details_button(dialog, original_error):
-    details = ttk.Button(dialog, text="Ver más",
+    details = ttk.Button(dialog, text=SHOW_MORE,
                          command=lambda: show_error_detail(dialog, details, original_error))
     details.pack(side=tk.TOP, pady=5)
 
@@ -38,7 +39,7 @@ class CustomDialog:
     def create_error_dialog(self):
         dialog = Toplevel(self.window)
         dialog.geometry("{}x{}".format(ERROR_TOTAL_WIDTH, ERROR_TOTAL_HEIGHT))
-        dialog.title("Error")
+        dialog.title(ERROR_TITLE)
         dialog.iconbitmap("images/error.ico")
         return dialog
 
@@ -83,10 +84,3 @@ class CustomDialog:
             side_border.pack(anchor=tk.W, padx=(1, 0))
             label = tk.Label(side_border, text=str(item))
             label.pack(anchor=tk.W, padx=(5, 0))
-
-    def show_testing_set(self, testing_set):
-        dialog = self.create_plot_dialog("Conjunto de pruebas")
-        data = testing_set.values.tolist()
-        create_tree_view(dialog, list(testing_set.columns), data, max_height=len(data))
-        dialog.geometry("{}x{}".format(900, 500))
-

@@ -1,4 +1,4 @@
-from user_interface.fairness_definitions.results import *
+from user_interface.fairness_definitions_window.results import *
 
 
 class Result:

@@ -4,16 +4,20 @@ from tkinter import font
 
 from user_interface.tree_view import create_tree_view
 
+SATISFIES = "Satisface"
+NOT_SATISFIES = "No satisface"
+RESULT = "Resultado"
+
 
 def show_result(satisfies, frame):
     if satisfies:
-        result_text = "Satisface"
+        result_text = SATISFIES
         color = "green4"
     else:
-        result_text = "No satisface"
+        result_text = NOT_SATISFIES
         color = "firebrick1"
     bigger_font = font.Font(size=10)
-    label = tk.Label(frame, text="Resultado: {}".format(result_text), fg=color, font=bigger_font)
+    label = tk.Label(frame, text="{}: {}".format(RESULT, result_text), fg=color, font=bigger_font)
     label.pack(anchor=tk.W)
     elements_frame = ttk.Frame(frame)
     elements_frame.pack(anchor=tk.W, padx=5, pady=2)

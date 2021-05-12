@@ -20,9 +20,9 @@ def fairness_through_awareness(testing_set, decision_algorithm, confidence, erro
     verified_cases = 0
     confidence_reached = False
     for i in range(individuals_amount-1):
+        individual1 = clone_and_remove_added_attributes(testing_set.iloc[i])
         for first in range(i+1, individuals_amount):
             verified_cases += 1
-            individual1 = clone_and_remove_added_attributes(testing_set.iloc[i])
             individual2 = clone_and_remove_added_attributes(testing_set.iloc[first])
             individuals_distance = decision_algorithm.individuals_distance(individual1, individual2)
             outcomes_distance = \

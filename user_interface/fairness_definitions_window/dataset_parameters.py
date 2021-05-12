@@ -7,6 +7,7 @@ from databases import decision_algorithms
 from handlers import input_validator
 from handlers.outcome_handler import OutcomeHandler
 
+CONTAINER_NAME = "  Conjunto de datos y clasificador/algoritmo de decisión "
 NO_OUTCOME_DISPLAY_NAME = "Sin salida"
 TEST_SIZE_DEFAULT = "25"
 ERROR_TITLE = "Tamaño del conjunto de pruebas no especificado"
@@ -17,11 +18,29 @@ class DatasetParametersContainer:
 
     def __init__(self, main_frame, width, confirmed_callback, dialog):
         self.outcome_handler = OutcomeHandler()
-        self.frame = \
-            ttk.LabelFrame(main_frame, text="  Conjunto de datos y clasificador/algoritmo de decisión ", width=width)
+        self.frame = ttk.LabelFrame(main_frame, text=CONTAINER_NAME, width=width)
         self.dataset_parameters = DatasetParameters(self.frame, self.outcome_handler,
                                                     decision_algorithms.get_all_display_names(),
                                                     confirmed_callback, dialog)
+
+    def get_outcome_data(self):
+        positive_outcome = self.outcome_handler.positive_outcome
+        negative_outcome = self.outcome_handler.negative_outcome
+        outcome_name = self.outcome_handler.outcome_name
+        return positive_outcome, negative_outcome, outcome_name
+
+
+class ParametersDisplayNames:
+
+    def __init__(self):
+        self.file_selector_label = "Archivo"
+        self.select_button = "Seleccionar"
+        self.filedialog_dataset = "Seleccionar archivo conjuto de datos"
+        self.outcome = "Salida"
+        self.positive = "Positiva"
+        self.test_size = "Tamaño conjunto de pruebas"
+        self.name = "Nombre"
+        self.confirm = "Confirmar"
 
 
 class DatasetParameters:
@@ -32,6 +51,7 @@ class DatasetParameters:
         self.outcome_handler = outcome_handler
         self.confirmed_callback = confirmed_callback
         self.dialog = dialog
+        self.display_names = ParametersDisplayNames()
         self.filename_text, self.filename_entry = self.create_file_selector()
         self.outcome_name_combobox = self.create_outcome_name_combobox()
         self.positive_outcome_combobox = self.create_positive_outcome_combobox()
@@ -40,17 +60,17 @@ class DatasetParameters:
         self.confirm_button = self.create_confirm_button(frame)
 
     def create_file_selector(self):
-        label = ttk.Label(self.frame, text="Archivo:")
+        label = ttk.Label(self.frame, text="{}:".format(self.display_names.file_selector_label))
         label.grid(column=0, row=0)
         text = tk.StringVar()
         entry = tk.Entry(self.frame, width=25, state="readonly", textvariable=text, readonlybackground="white")
         entry.grid(column=1, row=0, padx=2)
-        button = ttk.Button(self.frame, text="Seleccionar", command=self.open_filename_selector)
+        button = ttk.Button(self.frame, text=self.display_names.select_button, command=self.open_filename_selector)
         button.grid(column=2, row=0, padx=(0, 15))
         return text, entry
 
     def open_filename_selector(self):
-        filename = filedialog.askopenfilename(title="Seleccionar archivo conjuto de datos",
+        filename = filedialog.askopenfilename(title=self.display_names.filedialog_dataset,
                                               filetypes=(("CSV Files", "*.csv"),))
         if filename:
             self.outcome_handler.update_filename(filename)
@@ -62,7 +82,7 @@ class DatasetParameters:
             self.confirm_button.config(state="normal")
 
     def create_outcome_name_combobox(self):
-        label = ttk.Label(self.frame, text="Salida:")
+        label = ttk.Label(self.frame, text="{}:".format(self.display_names.outcome))
         label.grid(column=3, row=0)
         combobox = ttk.Combobox(self.frame, state="disabled", justify="center")
         combobox.grid(column=4, row=0, padx=(2, 15))
@@ -70,7 +90,7 @@ class DatasetParameters:
         return combobox
 
     def create_positive_outcome_combobox(self):
-        label = ttk.Label(self.frame, text="Positiva:")
+        label = ttk.Label(self.frame, text="{}:".format(self.display_names.positive))
         label.grid(column=5, row=0)
         combobox = ttk.Combobox(self.frame, state="disabled", width=5, justify="center")
         combobox.grid(column=6, row=0, padx=(2, 15))
@@ -78,7 +98,7 @@ class DatasetParameters:
         return combobox
 
     def create_test_size_spinbox(self):
-        label = ttk.Label(self.frame, text="Tamaño conjunto de pruebas:")
+        label = ttk.Label(self.frame, text="{}:".format(self.display_names.test_size))
         label.grid(column=7, row=0)
         validation_command = (self.frame.register(input_validator.validate_test_size))
         spinbox = ttk.Spinbox(self.frame, from_=1, to=100, width=3, validate="key",
@@ -91,7 +111,7 @@ class DatasetParameters:
 
     def create_decision_algorithm_combobox(self, display_names):
         display_names.sort()
-        label = ttk.Label(self.frame, text="Nombre:")
+        label = ttk.Label(self.frame, text="{}:".format(self.display_names.name))
         label.grid(column=10, row=0)
         combobox = ttk.Combobox(self.frame, state="readonly", values=display_names, justify="center")
         combobox.current(0)
@@ -99,7 +119,7 @@ class DatasetParameters:
         return combobox
 
     def create_confirm_button(self, frame):
-        button = ttk.Button(frame, text="Confirmar", width=10, command=self.dataset_parameters_confirmed)
+        button = ttk.Button(frame, text=self.display_names.confirm, width=10, command=self.dataset_parameters_confirmed)
         button.config(state="disabled")
         button.pack(side=tk.RIGHT, padx=(0, 10), pady=(7, 10))
         return button

@@ -17,6 +17,16 @@ DISPLAY_NAME_ERROR_TITLE = "Nombre para mostrar sin especificar"
 DISPLAY_NAME_ERROR_DETAIL = "Por favor ingrese el nombre para mostrar antes de añadir"
 
 
+class ParametersDisplayNames:
+
+    def __init__(self):
+        self.full_path = "Ruta completa"
+        self.algorithm_display_name = "Nombre para mostrar"
+        self.class_name = "Nombre de la clase"
+        self.select = "Seleccionar"
+        self.filedialog_algorithm = "Seleccionar archivo clasificador/algoritmo de decisión"
+
+
 class DecisionAlgorithmEditor:
 
     def __init__(self, main_frame, dialog):
@@ -26,6 +36,7 @@ class DecisionAlgorithmEditor:
         self.images = DecisionAlgorithmsEditorImages()
         self.row = 2
         self.interface_classes_names = [name for (name, _) in inspect.getmembers(interfaces, inspect.isclass)]
+        self.display_names = ParametersDisplayNames()
         self.create_header()
         self.filename_text = self.create_file_selector()
         self.display_name_entry = self.create_display_name_entry()
@@ -36,11 +47,12 @@ class DecisionAlgorithmEditor:
 
     def create_header(self):
         my_font = font.Font(size=10)
-        full_path_label = ttk.Label(self.frame, text="Ruta completa", justify="center", font=my_font)
+        full_path_label = ttk.Label(self.frame, text=self.display_names.full_path, justify="center", font=my_font)
         full_path_label.grid(column=0, row=0)
-        display_name_label = ttk.Label(self.frame, text="Nombre para mostrar", justify="center", font=my_font)
+        display_name_label = ttk.Label(self.frame, text=self.display_names.algorithm_display_name, justify="center",
+                                       font=my_font)
         display_name_label.grid(column=1, row=0)
-        class_name_label = ttk.Label(self.frame, text="Nombre de la clase", justify="center", font=my_font)
+        class_name_label = ttk.Label(self.frame, text=self.display_names.class_name, justify="center", font=my_font)
         class_name_label.grid(column=2, row=0)
 
     def create_file_selector(self):
@@ -49,12 +61,12 @@ class DecisionAlgorithmEditor:
         text = tk.StringVar()
         entry = tk.Entry(frame, width=100, state="readonly", textvariable=text, readonlybackground="white")
         entry.grid(column=1, row=0)
-        button = ttk.Button(frame, text="Seleccionar", command=self.open_filename_selector)
+        button = ttk.Button(frame, text=self.display_names.select, command=self.open_filename_selector)
         button.grid(column=2, row=0, padx=(2, 0))
         return text
 
     def open_filename_selector(self):
-        filename = filedialog.askopenfilename(title="Seleccionar archivo clasificador/algoritmo de decisión",
+        filename = filedialog.askopenfilename(title=self.display_names.filedialog_algorithm,
                                               filetypes=(("PY Files", "*.py"),))
         if filename:
             try:

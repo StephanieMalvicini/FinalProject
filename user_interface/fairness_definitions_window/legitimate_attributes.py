@@ -12,6 +12,8 @@ from user_interface.images import LegitimateAttributesImages
 COMPARISON_SIGNS_NON_NUMERIC = ["==", "!="]
 COMPARISON_SIGNS_NUMERIC = ["==", "!=", ">", ">=", "<=", "<"]
 AMOUNT_PER_ROW = 4
+
+GROUP_LABEL = "Grupo"
 ERROR_TITLE_GROUP = "Grupo {}: valor del atributo {} no especificado"
 ERROR_DETAIL_GROUP = "Por favor introduzca el valor del atributo {} para realizar la comparación"
 ERROR_TITLE = "Atributos legítimos sin especificar"
@@ -20,7 +22,7 @@ ERROR_DETAIL = "Por favor añada al menos un atributo legítimo para continuar"
 
 class LegitimateAttributesList:
 
-    def __init__(self, frame, row, attributes_values, required, dialog):
+    def __init__(self, frame, row, attributes_values, required, dialog, display_names):
         self.frame = ttk.Frame(frame)
         self.frame.grid(column=0, row=row, sticky=tk.NW)
         self.button_row = 1
@@ -28,7 +30,7 @@ class LegitimateAttributesList:
         self.dialog = dialog
         self.images = LegitimateAttributesImages()
         self.legitimate_attributes_list = list()
-        self.create_legitimate_attributes_label()
+        self.create_legitimate_attributes_label(display_names)
         self.buttons_frame, self.add_button, self.remove_button = self.create_add_remove_buttons()
         self.add_button_selected()
         if not required:
@@ -36,8 +38,8 @@ class LegitimateAttributesList:
             self.remove_button.config(state="disabled")
             self.legitimate_attributes_list[0].disable()
 
-    def create_legitimate_attributes_label(self):
-        label = ttk.Label(self.frame, text="Atributos legítimos: ")
+    def create_legitimate_attributes_label(self, display_names):
+        label = ttk.Label(self.frame, text="{}:".format(display_names["legitimate_attributes_list"]))
         label.grid(sticky=tk.W, column=0, row=self.button_row - 1, columnspan=2)
 
     def create_add_remove_buttons(self):
@@ -108,7 +110,7 @@ class LegitimateAttributes:
             self.add_button_column -= 3
 
     def create_group_label(self):
-        group_name = "Grupo {}".format(self.group_number)
+        group_name = "{} {}".format(GROUP_LABEL, self.group_number)
         label = ttk.Label(self.frame, text=group_name)
         label.grid(column=0, row=self.row, padx=10)
         return label

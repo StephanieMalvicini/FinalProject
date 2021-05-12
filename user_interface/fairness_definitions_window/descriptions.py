@@ -3,6 +3,7 @@ import tkinter as tk
 
 from exceptions.parameters import ParameterNotDefined
 
+CONTAINER_NAME = "  Atributos descripciones  "
 AMOUNT_PER_ROW = 6
 ERROR_TITLE = "Ningún atributo para las descripciones seleccionado"
 ERROR_DETAIL = "Por favor selecciona al menos un atributo antes de confirmar"
@@ -11,7 +12,7 @@ ERROR_DETAIL = "Por favor selecciona al menos un atributo antes de confirmar"
 class DescriptionsContainer:
 
     def __init__(self, main_frame, width):
-        self.frame = ttk.LabelFrame(main_frame, text="  Atributos descripciones  ", height=100, width=width)
+        self.frame = ttk.LabelFrame(main_frame, text=CONTAINER_NAME, height=100, width=width)
         self.descriptions = None
 
     def update(self, attributes_values):

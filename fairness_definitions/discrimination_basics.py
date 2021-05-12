@@ -2,20 +2,20 @@ import copy
 import math
 
 
-def calculate_basic_metrics(testing_set, descriptions, outcome_handler):
+def calculate_basic_metrics(testing_set, descriptions, positive_outcome, negative_outcome):
     metrics = list()
     for _ in range(len(descriptions)):
         metrics.append({"FP": 0, "FN": 0, "TP": 0, "TN": 0})
     for i in range(len(testing_set)):
         description_index = description_individual_satisfies(testing_set.iloc[i], descriptions)
         if description_index >= 0:
-            if testing_set.iloc[i]["Outcome"] == outcome_handler.negative_outcome and \
-                    testing_set.iloc[i]["PredictedOutcome"] == outcome_handler.negative_outcome:
+            if testing_set.iloc[i]["Outcome"] == negative_outcome and \
+                    testing_set.iloc[i]["PredictedOutcome"] == negative_outcome:
                 metrics[description_index]["TN"] += 1
-            elif testing_set.iloc[i]["Outcome"] == outcome_handler.negative_outcome:
+            elif testing_set.iloc[i]["Outcome"] == negative_outcome:
                 metrics[description_index]["FP"] += 1
-            elif testing_set.iloc[i]["Outcome"] == outcome_handler.positive_outcome and \
-                    testing_set.iloc[i]["PredictedOutcome"] == outcome_handler.positive_outcome:
+            elif testing_set.iloc[i]["Outcome"] == positive_outcome and \
+                    testing_set.iloc[i]["PredictedOutcome"] == positive_outcome:
                 metrics[description_index]["TP"] += 1
             else:
                 metrics[description_index]["FN"] += 1
@@ -36,7 +36,7 @@ def description_individual_satisfies(individual, descriptions):
     return index
 
 
-def create_positives_negatives_tables(testing_set, descriptions, decimals, outcome_handler):
+def create_positives_negatives_tables(testing_set, descriptions, decimals, positive_outcome):
     descriptions_amount = len(descriptions)
     positives_table = list()
     negatives_table = list()
@@ -50,7 +50,7 @@ def create_positives_negatives_tables(testing_set, descriptions, decimals, outco
         if description_index >= 0:
             probability = individual["PredictedProbability"]
             s = round(probability, decimals)
-            if individual["Outcome"] == outcome_handler.positive_outcome:
+            if individual["Outcome"] == positive_outcome:
                 positives_table[description_index][str(s)] += 1
             else:
                 negatives_table[description_index][str(s)] += 1

@@ -41,7 +41,8 @@ def conditional_statistical_parity_aux(parameters, parameters_result):
                                                                 legitimate_attributes,
                                                                 parameters["descriptions"],
                                                                 parameters["maximum_acceptable_difference"],
-                                                                parameters["outcome_handler"])
+                                                                parameters["positive_outcome"],
+                                                                parameters["negative_outcome"])
         template = "P({}=1|L,{})".format(parameters_result.predicted_outcome_display_name(), "{}")
         single_result = Result(satisfies)
         parameters_result.add_legitimate_attributes(single_result, legitimate_attributes, proportions, template,
@@ -61,14 +62,14 @@ def conditional_use_accuracy_equality_aux(parameters, parameters_result):
     result = Result(satisfies)
     parameters_result.add_maximum_acceptable_difference(result, parameters["maximum_acceptable_difference"])
 
-    template = "P({}={}|{}={},{})".format(parameters["outcome_handler"].outcome_name,
+    template = "P({}={}|{}={},{})".format(parameters["outcome_name"],
                                           "{}",
                                           parameters_result.predicted_outcome_display_name(),
                                           "{}", "{}")
-    ppv_template = template.format(parameters["outcome_handler"].positive_outcome,
-                                   parameters["outcome_handler"].positive_outcome, "{}")
-    npv_template = template.format(parameters["outcome_handler"].negative_outcome,
-                                   parameters["outcome_handler"].negative_outcome, "{}")
+    ppv_template = template.format(parameters["positive_outcome"],
+                                   parameters["positive_outcome"], "{}")
+    npv_template = template.format(parameters["negative_outcome"],
+                                   parameters["negative_outcome"], "{}")
     parameters_result.add_list(result, "PPV", ppv_values, ppv_template, parameters["descriptions"])
     parameters_result.add_list(result, "FPR", npv_values, npv_template, parameters["descriptions"])
     return result
@@ -80,11 +81,11 @@ def equalized_odds_aux(parameters, parameters_result):
     result = Result(satisfies)
     parameters_result.add_maximum_acceptable_difference(result, parameters["maximum_acceptable_difference"])
     template = "P({}={}|{}={},{})".format(parameters_result.predicted_outcome_display_name(),
-                                          parameters["outcome_handler"].positive_outcome,
-                                          parameters["outcome_handler"].outcome_name,
+                                          parameters["positive_outcome"],
+                                          parameters["outcome_name"],
                                           "{}", "{}")
-    tpr_template = template.format(parameters["outcome_handler"].positive_outcome, "{}")
-    fpr_template = template.format(parameters["outcome_handler"].negative_outcome, "{}")
+    tpr_template = template.format(parameters["positive_outcome"], "{}")
+    fpr_template = template.format(parameters["negative_outcome"], "{}")
     parameters_result.add_list(result, "TPR", tpr_values, tpr_template, parameters["descriptions"])
     parameters_result.add_list(result, "FPR", fpr_values, fpr_template, parameters["descriptions"])
     return result
@@ -111,8 +112,8 @@ def balance_for_negative_class_aux(parameters, parameters_result):
     result = Result(satisfies)
     parameters_result.add_maximum_acceptable_difference(result, parameters["maximum_acceptable_difference"])
     template = "E({}|{}={},{})".format(parameters_result.predicted_probability_display_name(),
-                                       parameters["outcome_handler"].outcome_name,
-                                       parameters["outcome_handler"].negative_outcome,
+                                       parameters["outcome_name"],
+                                       parameters["negative_outcome"],
                                        "{}")
     parameters_result.add_list(result, "expected_values", expected_values, template, parameters["descriptions"])
     return result
@@ -125,8 +126,8 @@ def balance_for_positive_class_aux(parameters, parameters_result):
     result = Result(satisfies)
     parameters_result.add_maximum_acceptable_difference(result, parameters["maximum_acceptable_difference"])
     template = "E({}|{}={},{})".format(parameters_result.predicted_probability_display_name(),
-                                       parameters["outcome_handler"].outcome_name,
-                                       parameters["outcome_handler"].positive_outcome,
+                                       parameters["outcome_name"],
+                                       parameters["positive_outcome"],
                                        "{}")
     parameters_result.add_list(result, "expected_values", expected_values, template, parameters["descriptions"])
     return result
@@ -139,9 +140,9 @@ def false_negative_error_rate_balance_aux(parameters, parameters_result):
     result = Result(satisfies)
     parameters_result.add_maximum_acceptable_difference(result, parameters["maximum_acceptable_difference"])
     template = "P({}={}|{}={},{})".format(parameters_result.predicted_outcome_display_name(),
-                                          parameters["outcome_handler"].negative_outcome,
-                                          parameters["outcome_handler"].outcome_name,
-                                          parameters["outcome_handler"].positive_outcome,
+                                          parameters["negative_outcome"],
+                                          parameters["outcome_name"],
+                                          parameters["positive_outcome"],
                                           "{}")
     parameters_result.add_list(result, "FNR", fnr_values, template, parameters["descriptions"])
     return result
@@ -153,9 +154,9 @@ def false_positive_error_rate_balance_aux(parameters, parameters_result):
     result = Result(satisfies)
     parameters_result.add_maximum_acceptable_difference(result, parameters["maximum_acceptable_difference"])
     template = "P({}={}|{}={},{})".format(parameters_result.predicted_outcome_display_name(),
-                                          parameters["outcome_handler"].positive_outcome,
-                                          parameters["outcome_handler"].outcome_name,
-                                          parameters["outcome_handler"].negative_outcome,
+                                          parameters["positive_outcome"],
+                                          parameters["outcome_name"],
+                                          parameters["negative_outcome"],
                                           "{}")
     parameters_result.add_list(result, "FPR", fpr_values, template, parameters["descriptions"])
     return result
@@ -167,7 +168,7 @@ def group_fairness_aux(parameters, parameters_result):
     result = Result(satisfies)
     parameters_result.add_maximum_acceptable_difference(result, parameters["maximum_acceptable_difference"])
     template = "P({}={}|{})".format(parameters_result.predicted_outcome_display_name(),
-                                    parameters["outcome_handler"].positive_outcome,
+                                    parameters["positive_outcome"],
                                     "{}")
     parameters_result.add_list(result, "(TP+FP)/(TP+FP+TN+FN)", proportions, template, parameters["descriptions"])
     return result
@@ -179,7 +180,7 @@ def overall_accuracy_equality_aux(parameters, parameters_result):
     result = Result(satisfies)
     parameters_result.add_maximum_acceptable_difference(result, parameters["maximum_acceptable_difference"])
     template = "P({}={}|{})".format(parameters_result.predicted_outcome_display_name(),
-                                    parameters["outcome_handler"].outcome_name,
+                                    parameters["outcome_name"],
                                     "{}")
     parameters_result.add_list(result, "(TP+TN)/(TP+FP+TN+FN)", precisions, template, parameters["descriptions"])
     return result
@@ -190,10 +191,10 @@ def predictive_parity_aux(parameters, parameters_result):
                                               parameters["maximum_acceptable_difference"])
     result = Result(satisfies)
     parameters_result.add_maximum_acceptable_difference(result, parameters["maximum_acceptable_difference"])
-    template = "P({}={}|{}={},{})".format(parameters["outcome_handler"].outcome_name,
-                                          parameters["outcome_handler"].positive_outcome,
+    template = "P({}={}|{}={},{})".format(parameters["outcome_name"],
+                                          parameters["positive_outcome"],
                                           parameters_result.predicted_outcome_display_name(),
-                                          parameters["outcome_handler"].positive_outcome,
+                                          parameters["positive_outcome"],
                                           "{}")
     parameters_result.add_list(result, "PPV", ppv_values, template, parameters["descriptions"])
     return result
@@ -215,8 +216,8 @@ def test_fairness_aux(parameters, parameters_result):
     result = Result(True in satisfies_list)
     parameters_result.add_maximum_acceptable_difference(result, parameters["maximum_acceptable_difference"])
     parameters_result.add_decimals(result, parameters["decimals"])
-    template = "P({}={}|S=s,{})".format(parameters["outcome_handler"].outcome_name,
-                                        parameters["outcome_handler"].positive_outcome,
+    template = "P({}={}|S=s,{})".format(parameters["outcome_name"],
+                                        parameters["positive_outcome"],
                                         "{}")
     parameters_result.add_probabilities_table(result, template, satisfies_list, parameters["descriptions"],
                                               parameters["probabilities_table"])
@@ -228,8 +229,8 @@ def well_calibration_aux(parameters, parameters_result):
                                       parameters["decimals"])
     result = Result(True in satisfies_list)
     parameters_result.add_decimals(result, parameters["decimals"])
-    template = "P({}={}|S=s,{})".format(parameters["outcome_handler"].outcome_name,
-                                        parameters["outcome_handler"].positive_outcome,
+    template = "P({}={}|S=s,{})".format(parameters["outcome_name"],
+                                        parameters["positive_outcome"],
                                         "{}")
     parameters_result.add_probabilities_table(result, template, satisfies_list, parameters["descriptions"],
                                               parameters["probabilities_table"])
