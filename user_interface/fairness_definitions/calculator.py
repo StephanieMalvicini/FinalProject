@@ -5,6 +5,7 @@ from databases import fairness_definitions, parameters
 from exceptions.decision_algorithm import InvalidDecisionAlgorithmParameters, InvalidModuleName
 from exceptions.parameters import ParameterNotDefined
 from handlers import decision_algorithm_creator, parameter_converter
+from handlers.dataset_downloader import DatasetDownloader
 from handlers.dataset_handler import DatasetHandler
 from handlers import descriptions_calculator
 from handlers.fairness_definitions_calculator import FairnessDefinitionsCalculator
@@ -42,7 +43,7 @@ class FairnessDefinitionsCalculatorUI:
             DescriptionsContainer(self.frame, width)
         self.parameters = \
             FairnessDefinitionsParametersContainer(self.frame, width, self.dialog)
-        self.definitions = FairnessDefinitionsContainer(self.frame, width, self.calculate, self.dialog)
+        self.definitions = FairnessDefinitionsContainer(self.frame, width, self.calculate)
         self.pack_containers()
 
     def pack_containers(self):
@@ -61,7 +62,8 @@ class FairnessDefinitionsCalculatorUI:
                                                              self.prediction_handler.predicted_outcome_available(),
                                                              self.prediction_handler.predicted_probability_available(),
                                                              self.prediction_handler.distances_available())
-                self.definitions.update(self.dataset_handler.get_testing_set_to_show(),
+                testing_set_downloader = DatasetDownloader(self.dataset_handler.get_testing_set_to_show())
+                self.definitions.update(testing_set_downloader,
                                         all_definitions, available_definitions_names)
                 required_parameters_names = parameters.get_required_names(available_definitions_names)
                 self.parameters.update(self.dataset_handler.get_attributes_values(), required_parameters_names)

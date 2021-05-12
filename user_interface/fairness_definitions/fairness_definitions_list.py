@@ -1,22 +1,21 @@
-from tkinter import ttk
 import tkinter as tk
-
+from tkinter import ttk
+from tkinter import filedialog
 from user_interface.images import FairnessDefinitionResultImages
 
 
 class FairnessDefinitionsContainer:
 
-    def __init__(self, main_frame, width, calculate_callback, dialog):
+    def __init__(self, main_frame, width, calculate_callback):
         self.frame = ttk.LabelFrame(main_frame, text="  Definiciones de fairness - cálculo  ", height=300, width=width)
         self.fairness_definitions = None
         self.calculate_callback = calculate_callback
-        self.dialog = dialog
 
-    def update(self, testing_set, all_definitions, available_definitions_names): #sacar el testing set
+    def update(self, testing_set_downloader, all_definitions, available_definitions_names):
         if self.fairness_definitions:
             self.fairness_definitions.destroy()
-        self.fairness_definitions = FairnessDefinitionsList(self.frame, self.dialog, self.calculate_callback,
-                                                            testing_set, all_definitions, available_definitions_names)
+        self.fairness_definitions = FairnessDefinitionsList(self.frame, self.calculate_callback, testing_set_downloader,
+                                                            all_definitions, available_definitions_names)
 
     def show_result(self, results, plots):
         self.fairness_definitions.show_result(results, plots)
@@ -24,17 +23,16 @@ class FairnessDefinitionsContainer:
 
 class FairnessDefinitionsList:
 
-    def __init__(self, parent_frame, dialog, calculate_callback, testing_set,
-                 all_definitions, available_definitions_names):
-        self.dialog = dialog
-        self.calculate_callback = calculate_callback
+    def __init__(self, parent_frame, calculate_callback, testing_set_downloader, all_definitions,
+                 available_definitions_names):
         self.buttons_frame = ttk.Frame(parent_frame)
         self.buttons_frame.pack(fill=tk.X, anchor=tk.NW, padx=10, pady=(7, 3))
-        self.select_all_button = self.create_select_all_button()
-        self.unselect_all_button = self.create_unselect_all_button()
+        self.testing_set_downloader = testing_set_downloader
+        self.create_select_all_button()
+        self.create_unselect_all_button()
         self.basic_metrics_plot_button, self.tables_plot_button = self.create_plots_buttons()
-        self.create_testing_set_button(testing_set)
-        self.calculate_button = self.create_calculate_button()
+        self.create_testing_set_button()
+        self.create_calculate_button(calculate_callback)
         self.frame = ttk.Frame(parent_frame)
         self.frame.pack(anchor=tk.W, fill=tk.X, padx=10, pady=(5, 10))
         self.fairness_definitions_items = self.create_check_buttons(all_definitions, available_definitions_names)
@@ -65,20 +63,26 @@ class FairnessDefinitionsList:
         tables_button.pack(side=tk.RIGHT, anchor=tk.NE, padx=2)
         return basic_metrics_button, tables_button
 
-    def create_testing_set_button(self, testing_set):
-        button = ttk.Button(self.buttons_frame, text="Ver conjunto de pruebas",
-                            command=lambda: self.dialog.show_testing_set(testing_set))
+    def create_testing_set_button(self):
+        button = ttk.Button(self.buttons_frame, text="Descargar conjunto de pruebas",
+                            command=self.open_filename_selector)
         button.pack(side=tk.RIGHT, anchor=tk.NE)
 
-    def create_calculate_button(self):
-        button = ttk.Button(self.buttons_frame, text="Calcular", width=10, command=self.calculate)
+    def open_filename_selector(self):
+        filename = filedialog.asksaveasfilename(title="Guardar como", filetypes=(("CSV Files", "*.csv"),),
+                                                defaultextension=".csv")
+        if filename:
+            self.testing_set_downloader.download_dataset(filename)
+
+    def create_calculate_button(self, callback):
+        button = ttk.Button(self.buttons_frame, text="Calcular", width=10, command=lambda: self.calculate(callback))
         button.pack(side=tk.RIGHT, anchor=tk.NE, padx=(0, 5))
         return button
 
-    def calculate(self):
+    def calculate(self, callback):
         selected_definitions = [item.definition_name for item in self.fairness_definitions_items if item.is_selected()]
         if len(selected_definitions) > 0:
-            self.calculate_callback(selected_definitions)
+            callback(selected_definitions)
 
     def create_check_buttons(self, all_definitions, available_definitions_names):
         check_buttons = list()

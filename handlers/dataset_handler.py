@@ -53,8 +53,5 @@ class DatasetHandler:
     def has_outcome(self):
         return self.outcome_name != NO_OUTCOME_VALUE
 
-    def get_testing_dataset_samples_amount(self):
-        return len(self.__attributes_test)
-
     def get_testing_set_to_show(self):
         return self.__dataset.iloc[self.__attributes_test.index]
