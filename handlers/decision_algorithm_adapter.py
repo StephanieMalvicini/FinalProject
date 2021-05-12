@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-class PredictionHandler:
+class DecisionAlgorithmAdapter:
 
     def __init__(self, decision_algorithm, attributes_test):
         self.attributes_test = attributes_test
@@ -26,3 +26,9 @@ class PredictionHandler:
     def distances_available(self):
         return hasattr(self.decision_algorithm, "individuals_distance") and \
                hasattr(self.decision_algorithm, "outcomes_distance")
+
+    def get_individuals_distance(self, subject1, subject2):
+        return self.decision_algorithm.individuals_distance(subject1, subject2)
+
+    def get_outcomes_distance(self, outcome1, outcome2):
+        return self.decision_algorithm.outcomes_distance(outcome1, outcome2)

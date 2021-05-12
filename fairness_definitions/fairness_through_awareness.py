@@ -13,7 +13,8 @@ class FailingCase:
         self.outcomes_distance = outcomes_distance
 
 
-def fairness_through_awareness(testing_set, decision_algorithm, confidence, error, minimum_samples_amount):
+def fairness_through_awareness(testing_set, calculate_individuals_distance, calculate_outcomes_distance,
+                               confidence, error, minimum_samples_amount):
     not_satisfies = 0
     individuals_amount = len(testing_set.index)
     failing_cases = list()
@@ -24,9 +25,9 @@ def fairness_through_awareness(testing_set, decision_algorithm, confidence, erro
         for first in range(i+1, individuals_amount):
             verified_cases += 1
             individual2 = clone_and_remove_added_attributes(testing_set.iloc[first])
-            individuals_distance = decision_algorithm.individuals_distance(individual1, individual2)
+            individuals_distance = calculate_individuals_distance(individual1, individual2)
             outcomes_distance = \
-                decision_algorithm.outcomes_distance(individual1["PredictedOutcome"], individual2["PredictedOutcome"])
+                calculate_outcomes_distance(individual1["PredictedOutcome"], individual2["PredictedOutcome"])
             if outcomes_distance > individuals_distance:
                 not_satisfies += 1
                 failing_cases.append(FailingCase(individual1, individual2, individuals_distance, outcomes_distance))

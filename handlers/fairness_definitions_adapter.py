@@ -24,7 +24,7 @@ def causal_discrimination_aux(parameters, parameters_result):
                                                                        parameters["confidence"],
                                                                        parameters["error"] / 100,
                                                                        parameters["minimum_samples_amount"],
-                                                                       parameters["prediction_handler"])
+                                                                       parameters["predict_outcome"])
     result = Result(proportion <= MAXIMUM_FAILING_PROPORTION)
     parameters_result.add_confidence(result, parameters["confidence"], confidence_reached)
     parameters_result.add_percentage(result, proportion, parameters["error"])
@@ -92,11 +92,13 @@ def equalized_odds_aux(parameters, parameters_result):
 
 
 def fairness_through_awareness_aux(parameters, parameters_result):
-    proportion, failing_cases, confidence_reached = fairness_through_awareness(parameters["testing_set"],
-                                                                               parameters["decision_algorithm"],
-                                                                               parameters["confidence"],
-                                                                               parameters["error"] / 100,
-                                                                               parameters["minimum_samples_amount"])
+    proportion, failing_cases, confidence_reached = \
+        fairness_through_awareness(parameters["testing_set"],
+                                   parameters["calculate_individuals_distance"],
+                                   parameters["calculate_outcomes_distance"],
+                                   parameters["confidence"],
+                                   parameters["error"] / 100,
+                                   parameters["minimum_samples_amount"])
     result = Result(proportion <= MAXIMUM_FAILING_PROPORTION)
     parameters_result.add_confidence(result, parameters["confidence"], confidence_reached)
     parameters_result.add_percentage(result, proportion, parameters["error"])

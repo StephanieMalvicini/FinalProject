@@ -9,7 +9,7 @@ from handlers.dataset_downloader import DatasetDownloader
 from handlers.dataset_handler import DatasetHandler
 from handlers import descriptions_calculator
 from handlers.fairness_definitions_calculator import FairnessDefinitionsCalculator
-from handlers.prediction_handler import PredictionHandler
+from handlers.decision_algorithm_adapter import DecisionAlgorithmAdapter
 from user_interface.fairness_definitions_window.descriptions import DescriptionsContainer
 from user_interface.fairness_definitions_window.dataset_parameters import DatasetParametersContainer
 from user_interface.fairness_definitions_window.fairness_definitions_list import FairnessDefinitionsContainer
@@ -102,7 +102,7 @@ class FairnessDefinitionsCalculatorUI:
             decision_algorithm = self.prediction_handler.decision_algorithm
         if updated:
             attributes_test, _ = dataset_handler.get_testing_dataset()
-            self.prediction_handler = PredictionHandler(decision_algorithm, attributes_test)
+            self.prediction_handler = DecisionAlgorithmAdapter(decision_algorithm, attributes_test)
             self.calculator = None
         self.last_used_values = LastUsedValues(filename, outcome_name, test_size, decision_algorithm_name)
         self.dataset_handler = dataset_handler

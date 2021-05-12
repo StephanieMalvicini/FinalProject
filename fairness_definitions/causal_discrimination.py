@@ -8,7 +8,7 @@ from constants import statistical_constants
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
-def causal_discrimination(attributes_test, descriptions, confidence, error, minimum_samples_amount, prediction_handler):
+def causal_discrimination(attributes_test, descriptions, confidence, error, minimum_samples_amount, predict_outcome):
     testing_set = copy.deepcopy(attributes_test)
     delete_column(testing_set, "Outcome")
     delete_column(testing_set, "PredictedProbability")
@@ -27,7 +27,7 @@ def causal_discrimination(attributes_test, descriptions, confidence, error, mini
                 if not similar_individual.equals(individual):
                     delete_column(similar_individual, "PredictedOutcome")
                     similar_individual["PredictedOutcome"] = \
-                        prediction_handler.get_predicted_outcome(similar_individual)
+                        predict_outcome(similar_individual)
                     test_suite = test_suite.append(similar_individual, ignore_index=True)
                     if similar_individual["PredictedOutcome"] != individual["PredictedOutcome"]:
                         fails = True

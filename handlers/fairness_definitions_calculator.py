@@ -44,9 +44,10 @@ class FairnessDefinitionsCalculator:
         params["testing_set"] = self.testing_set
         params["positive_outcome"] = positive_outcome
         params["negative_outcome"] = negative_outcome
-        params["prediction_handler"] = self.prediction_handler
+        params["predict_outcome"] = self.prediction_handler.get_predicted_outcome
         params["outcome_name"] = outcome_name
-        params["decision_algorithm"] = self.prediction_handler.decision_algorithm #SACARLO!!
+        params["calculate_individuals_distance"] = self.prediction_handler.get_individuals_distance
+        params["calculate_outcomes_distance"] = self.prediction_handler.get_outcomes_distance
         return params
 
     def update_parameters(self, descriptions, new_params):

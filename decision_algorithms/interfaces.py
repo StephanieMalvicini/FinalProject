@@ -18,5 +18,5 @@ class DistanceCalculator:
     def individuals_distance(self, subject1: pandas.Series, subject2: pandas.Series):
         raise NotImplementedError
 
-    def outcomes_distance(self, output1, output2):
+    def outcomes_distance(self, outcome1, outcome2):
         raise NotImplementedError
