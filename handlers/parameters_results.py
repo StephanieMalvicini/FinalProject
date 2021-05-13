@@ -78,7 +78,8 @@ class ParametersResult:
             row_descriptions.append(template.format(formatted_description))
         column_names = list(probabilities_table[0].keys())
         column_names.insert(0, "s")
-        data = [list(dict_probabilities.values()) for dict_probabilities in probabilities_table]
+        data = [list(round(value, 3) for value in dict_probabilities.values())
+                for dict_probabilities in probabilities_table]
         for i, row in enumerate(data):
             row.insert(0, row_descriptions[i])
         results_row = [self.display_names["satisfies"] if element else self.display_names["not_satisfies"]
@@ -91,11 +92,12 @@ class ParametersResult:
         result.add_element(SingleElement(self.display_names["decimals"], value))
 
     def add_list(self, result, list_name, list_values, template, descriptions):
+        values = [round(value, 3) for value in list_values]
         if list_name in self.display_names.keys():
             list_name = self.display_names[list_name]
         formatted_descriptions = [format_description(description) for description in descriptions]
         items_names = [template.format(description) for description in formatted_descriptions]
-        result.add_element(ListElement(list_name, items_names, list_values))
+        result.add_element(ListElement(list_name, items_names, values))
 
     def add_legitimate_attributes(self, result, legitimate_attributes, list_values, template, descriptions):
         list_name = legitimate_attributes.split(" & ")

@@ -11,7 +11,7 @@ NOT_AVAILABLE = "no disponible"
 class FairnessDefinitionsContainer:
 
     def __init__(self, main_frame, width, calculate_callback):
-        self.frame = ttk.LabelFrame(main_frame, text=CONTAINER_NAME, height=300, width=width)
+        self.frame = ttk.LabelFrame(main_frame, text=CONTAINER_NAME, height=350, width=width)
         self.fairness_definitions = None
         self.calculate_callback = calculate_callback
 

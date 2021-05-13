@@ -32,12 +32,12 @@ def show_single_element(element, frame):
 
 
 def show_list_element(element, frame):
-    underlined_font = font.Font(underline=True, size=9)
+    underlined_font = font.Font(weight="bold", size=9)
     label = tk.Label(frame, text=element.name, font=underlined_font)
     label.pack(anchor=tk.W)
     for i, item in enumerate(element.items):
         label = ttk.Label(frame, text="{} = {}".format(element.items_names[i], item))
-        label.pack(anchor=tk.W)
+        label.pack(anchor=tk.W, padx=(10, 0))
 
 
 def show_table_element(element, frame):

@@ -253,6 +253,7 @@ class LegitimateAttribute:
 
     def update_comparison_signs_combobox(self, comparison_signs):
         self.comparison_signs_combobox["values"] = comparison_signs
+        self.comparison_signs_combobox.current(0)
 
     def update_attribute_values_combobox(self):
         attribute_name = self.attributes_names_combobox.get()

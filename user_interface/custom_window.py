@@ -52,7 +52,7 @@ class CustomWindow:
 
     def create_background(self):
         background = tk.Label(self.buttons_frame, image=self.images.background)
-        background.grid(column=0, row=0, rowspan=3, columnspan=2, sticky=tk.W, pady=(10, 0))
+        background.grid(column=0, row=0, rowspan=3, columnspan=2, sticky=tk.SW, pady=(10, 0))
 
     def create_buttons_frame(self):
         frame = ttk.Frame(self.main_frame)
