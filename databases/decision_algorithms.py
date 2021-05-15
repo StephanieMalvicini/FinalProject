@@ -56,3 +56,12 @@ def delete(display_name):
     cursor.execute("DELETE from decision_algorithms WHERE display_name=?", (display_name,))
     connection.commit()
     connection.close()
+
+
+def no_entries():
+    connection = sqlite3.connect(PATH_DB)
+    cursor = connection.cursor()
+    cursor.execute("SELECT COUNT(*) AS RowCnt from decision_algorithms")
+    data = cursor.fetchone()
+    connection.close()
+    return data[0] == 0

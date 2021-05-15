@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import tkinter.font as font
 
+from databases import decision_algorithms
 from user_interface.decision_algorithm_editor import DecisionAlgorithmEditor
 from user_interface.dialogs import CustomDialog
 from user_interface.fairness_definitions_window.calculator import FairnessDefinitionsCalculatorUI
@@ -28,7 +29,7 @@ class CustomWindow:
         self.buttons_frame = self.create_buttons_frame()
         self.create_background()
         self.create_add_decision_algorithm_button()
-        self.create_calculate_fairness_definitions_button()
+        self.calculate_button = self.create_calculate_fairness_definitions_button()
         self.go_back_button = self.create_go_back_button()
 
         self.window.mainloop()
@@ -78,6 +79,9 @@ class CustomWindow:
                            height=8, command=self.calculate_fairness_definitions, bg="white")
         button["font"] = font.Font(size=12)
         button.grid(column=1, row=1, sticky=tk.E, padx=(0, 150), pady=(20, 0))
+        if decision_algorithms.no_entries():
+            button.config(state="disabled")
+        return button
 
     def calculate_fairness_definitions(self):
         self.go_back_button.pack(anchor=tk.NW, pady=10, padx=10)
@@ -94,3 +98,7 @@ class CustomWindow:
         self.buttons_frame.pack()
         self.current_screen.destroy()
         self.current_screen = None
+        if decision_algorithms.no_entries():
+            self.calculate_button.config(state="disabled")
+        else:
+            self.calculate_button.config(state="normal")
