@@ -33,7 +33,7 @@ def validate_error(str_value):
 def validate_minimum_samples_amount(str_value):
     if len(str_value) == 0:
         return True
-    return str_value.isdigit()
+    return str_value.isdigit() and int(str_value) > 0
 
 
 def validate_decimals(str_value):

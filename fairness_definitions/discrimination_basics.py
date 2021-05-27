@@ -1,6 +1,8 @@
 import copy
 import math
 
+from constants.predictions_names import *
+
 
 def calculate_basic_metrics(testing_set, descriptions, positive_outcome, negative_outcome):
     metrics = list()
@@ -9,13 +11,13 @@ def calculate_basic_metrics(testing_set, descriptions, positive_outcome, negativ
     for i in range(len(testing_set)):
         description_index = description_individual_satisfies(testing_set.iloc[i], descriptions)
         if description_index >= 0:
-            if testing_set.iloc[i]["Outcome"] == negative_outcome and \
-                    testing_set.iloc[i]["PredictedOutcome"] == negative_outcome:
+            if testing_set.iloc[i][OUTCOME] == negative_outcome and \
+                    testing_set.iloc[i][PREDICTED_OUTCOME] == negative_outcome:
                 metrics[description_index]["TN"] += 1
-            elif testing_set.iloc[i]["Outcome"] == negative_outcome:
+            elif testing_set.iloc[i][OUTCOME] == negative_outcome:
                 metrics[description_index]["FP"] += 1
-            elif testing_set.iloc[i]["Outcome"] == positive_outcome and \
-                    testing_set.iloc[i]["PredictedOutcome"] == positive_outcome:
+            elif testing_set.iloc[i][OUTCOME] == positive_outcome and \
+                    testing_set.iloc[i][PREDICTED_OUTCOME] == positive_outcome:
                 metrics[description_index]["TP"] += 1
             else:
                 metrics[description_index]["FN"] += 1
@@ -48,9 +50,9 @@ def create_positives_negatives_tables(testing_set, descriptions, decimals, posit
         individual = testing_set.iloc[i]
         description_index = description_individual_satisfies(individual, descriptions)
         if description_index >= 0:
-            probability = individual["PredictedProbability"]
+            probability = individual[PREDICTED_PROBABILITY]
             s = round(probability, decimals)
-            if individual["Outcome"] == positive_outcome:
+            if individual[OUTCOME] == positive_outcome:
                 positives_table[description_index][str(s)] += 1
             else:
                 negatives_table[description_index][str(s)] += 1

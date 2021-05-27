@@ -1,4 +1,3 @@
-import copy
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
@@ -18,7 +17,7 @@ class DatasetHandler:
         outcomes_train = pd.DataFrame()
         column_names = self.__dataset.columns
         if self.has_outcome():
-            column_names.drop(self.outcome_name)
+            column_names = column_names.drop(self.outcome_name)
             outcomes = self.__dataset[self.outcome_name]
         else:
             outcomes = pd.DataFrame()
@@ -36,10 +35,10 @@ class DatasetHandler:
         return attributes_train, attributes_test, outcomes_train, outcomes_test
 
     def get_training_dataset(self):
-        return copy.deepcopy(self.__attributes_train), copy.deepcopy(self.__outcomes_train)
+        return self.__attributes_train.copy(deep=True), self.__outcomes_train.copy(deep=True)
 
     def get_testing_dataset(self):
-        return copy.deepcopy(self.__attributes_test), copy.deepcopy(self.__outcomes_test)
+        return self.__attributes_test.copy(deep=True), self.__outcomes_test.copy(deep=True)
 
     def get_attributes_values(self):
         attributes_names = self.__dataset.columns

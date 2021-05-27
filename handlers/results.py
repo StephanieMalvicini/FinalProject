@@ -29,11 +29,12 @@ class ListElement:
 
 class TableElement:
 
-    def __init__(self, name, column_names, data, first_column_centered=True):
+    def __init__(self, name, column_names, data, first_column_centered=True, max_height=4):
         self.name = name
         self.column_names = column_names
         self.data = data
         self.first_column_centered = first_column_centered
+        self.max_height = max_height
 
     def show(self, frame):
         show_table_element(self, frame)
@@ -47,4 +48,3 @@ class SingleElement:
 
     def show(self, frame):
         show_single_element(self, frame)
-

@@ -199,7 +199,7 @@ class LegitimateAttribute:
             self.current_attribute_values = self.attribute_values_entry
             self.numeric_attribute = True
         else:
-            self.comparison_signs_combobox = self.create_comparison_signs_combobox(COMPARISON_SIGNS_NUMERIC)
+            self.comparison_signs_combobox = self.create_comparison_signs_combobox(COMPARISON_SIGNS_NON_NUMERIC)
             self.current_attribute_values = self.attribute_values_combobox
             self.numeric_attribute = False
         self.current_attribute_values.grid(column=self.add_button_column - 1, row=self.row, padx=(0, 10), sticky="ew")

@@ -4,14 +4,13 @@ import pandas as pd
 import warnings
 
 from constants import statistical_constants
+from constants.predictions_names import *
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
 def causal_discrimination(attributes_test, descriptions, confidence, error, minimum_samples_amount, predict_outcome):
     testing_set = copy.deepcopy(attributes_test)
-    delete_column(testing_set, "Outcome")
-    delete_column(testing_set, "PredictedProbability")
     fails_amount = 0
     test_suite = pd.DataFrame()
     samples_amount = 0
@@ -25,11 +24,10 @@ def causal_discrimination(attributes_test, descriptions, confidence, error, mini
             for description in descriptions:
                 similar_individual = create_similar_individual(individual, description)
                 if not similar_individual.equals(individual):
-                    delete_column(similar_individual, "PredictedOutcome")
-                    similar_individual["PredictedOutcome"] = \
+                    similar_individual[PREDICTED_OUTCOME] = \
                         predict_outcome(similar_individual)
                     test_suite = test_suite.append(similar_individual, ignore_index=True)
-                    if similar_individual["PredictedOutcome"] != individual["PredictedOutcome"]:
+                    if similar_individual[PREDICTED_OUTCOME] != individual[PREDICTED_OUTCOME]:
                         fails = True
             if fails:
                 fails_amount += 1
@@ -48,10 +46,3 @@ def create_similar_individual(individual, description):
     for attribute in description.keys():
         similar_individual[attribute] = description[attribute]
     return similar_individual
-
-
-def delete_column(dataset, column_name):
-    try:
-        del dataset[column_name]
-    except KeyError:
-        pass

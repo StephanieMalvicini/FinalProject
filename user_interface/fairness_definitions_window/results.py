@@ -44,6 +44,6 @@ def show_table_element(element, frame):
     underlined_font = font.Font(underline=True, size=9)
     label = tk.Label(frame, text=element.name, font=underlined_font)
     label.pack(anchor=tk.W, pady=(1, 3))
-    create_tree_view(frame, element.column_names, element.data, max_height=4,
+    create_tree_view(frame, element.column_names, element.data, element.max_height,
                      first_centered=element.first_column_centered)
 

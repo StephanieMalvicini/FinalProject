@@ -1,3 +1,4 @@
+from constants.predictions_names import *
 from handlers.results import SingleElement, TableElement, ListElement
 
 
@@ -46,12 +47,16 @@ class ParametersResult:
     def add_test_suite(self, result, test_suite, descriptions):
         # arrange attributes so the ones used in the descriptions goes first
         sorted_columns = list(descriptions[0].keys())
-        sorted_columns.insert(0, "PredictedOutcome")
+        sorted_columns.insert(0, PREDICTED_OUTCOME)
         for column in test_suite.columns:
             if column not in sorted_columns:
                 sorted_columns.append(column)
+        if PREDICTED_PROBABILITY in sorted_columns:
+            sorted_columns.remove(PREDICTED_PROBABILITY)
+        if OUTCOME in sorted_columns:
+            sorted_columns.remove(OUTCOME)
         testing_suite = test_suite[sorted_columns]
-        testing_suite.rename(columns={"PredictedOutcome": self.display_names["predicted_outcome"]})
+        testing_suite = testing_suite.rename(columns={PREDICTED_OUTCOME: self.display_names["predicted_outcome"]})
         column_names = list(testing_suite.columns)
         data = testing_suite.values.tolist()
         result.add_element(TableElement(self.display_names["test_suite"], column_names, data))
@@ -86,7 +91,8 @@ class ParametersResult:
                        for element in column_satisfies.values()]
         results_row.insert(0, self.display_names["result"])
         data.append(results_row)
-        result.add_element(TableElement(self.display_names["probabilities_table"], column_names, data, False))
+        result.add_element(TableElement(self.display_names["probabilities_table"], column_names, data, False,
+                                        len(data)+1))
 
     def add_decimals(self, result, value):
         result.add_element(SingleElement(self.display_names["decimals"], value))

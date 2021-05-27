@@ -1,5 +1,6 @@
 import sys
 
+from constants.predictions_names import *
 from databases import parameters
 from exceptions.decision_algorithm import InvalidDecisionAlgorithmParameters
 from fairness_definitions.discrimination_basics import calculate_basic_metrics, \
@@ -20,13 +21,13 @@ class FairnessDefinitionsCalculator:
         try:
             attributes_test, outcomes_test = self.dataset_handler.get_testing_dataset()
             if self.dataset_handler.has_outcome():
-                attributes_test["Outcome"] = outcomes_test
+                attributes_test[OUTCOME] = outcomes_test
             if self.prediction_handler.predicted_probability_available():
                 predicted_probabilities = self.prediction_handler.get_predicted_probabilities()
-                attributes_test["PredictedProbability"] = predicted_probabilities
+                attributes_test[PREDICTED_PROBABILITY] = predicted_probabilities
             if self.prediction_handler.predicted_outcome_available():
                 predicted_outcomes = self.prediction_handler.get_predicted_outcomes()
-                attributes_test["PredictedOutcome"] = predicted_outcomes
+                attributes_test[PREDICTED_OUTCOME] = predicted_outcomes
         except Exception:
             raise InvalidDecisionAlgorithmParameters(sys.exc_info())
         return attributes_test
@@ -50,17 +51,22 @@ class FairnessDefinitionsCalculator:
         params["calculate_outcomes_distance"] = self.prediction_handler.get_outcomes_distance
         return params
 
-    def update_parameters(self, descriptions, new_params):
+    def update_parameters(self, descriptions, new_params, positive_outcome, negative_outcome):
+        outcomes_updated = False
+        if self.params["positive_outcome"] != positive_outcome:
+            self.params["positive_outcome"] = positive_outcome
+            self.params["negative_outcome"] = negative_outcome
+            outcomes_updated = True
         old_descriptions = self.params["descriptions"] if "descriptions" in self.params.keys() else None
         old_decimals = self.params["decimals"] if "decimals" in self.params.keys() else None
         self.params["descriptions"] = descriptions
         for (name, value) in new_params.items():
             self.params[name] = value
-        if old_descriptions != self.params["descriptions"]:
+        if old_descriptions != self.params["descriptions"] or outcomes_updated:
             self.update_metrics()
             if "decimals" in self.params.keys():
                 self.update_tables()
-        elif "decimals" in self.params.keys() and old_decimals != self.params["decimals"]:
+        elif "decimals" in self.params.keys() and (old_decimals != self.params["decimals"] or outcomes_updated):
             self.update_tables()
 
     def update_tables(self):

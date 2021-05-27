@@ -98,7 +98,7 @@ class FairnessDefinitionsParameters:
         label = ttk.Label(self.frame, text="{}:".format(display_names[name]))
         label.grid(column=9, row=0)
         validation_command = (self.frame.register(input_validator.validate_minimum_samples_amount))
-        spinbox = ttk.Spinbox(self.frame, from_=1, width=7, justify="center", validate="key",
+        spinbox = ttk.Spinbox(self.frame, from_=1, to=float('inf'), width=7, justify="center", validate="key",
                               validatecommand=(validation_command, '%P'))
         spinbox.set(MINIMUM_SAMPLES_AMOUNT_DEFAULT)
         spinbox.grid(column=10, row=0, padx=(2, 15))

@@ -1,5 +1,0 @@
-display_name,class_name,full_path
-Injusto,BiasClassifier,C:/Users/sam_p/Documents/FinalProject/decision_algorithms/bias_classifier.py
-Justo,FairClassifier,C:/Users/sam_p/Documents/FinalProject/decision_algorithms/fair_classifier.py
-Aleatorio,RandomClassifier,C:/Users/sam_p/Documents/FinalProject/decision_algorithms/random_classifier.py
-Test,FairClassifier,C:/Users/sam_p/Documents/FinalProject/decision_algorithms/test_classifier.py

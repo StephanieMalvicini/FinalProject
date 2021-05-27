@@ -15,7 +15,11 @@ class DecisionAlgorithmAdapter:
 
     def get_predicted_outcome(self, individual):
         dataframe = pd.DataFrame().append(individual)
-        return self.decision_algorithm.predict_outcome(dataframe)[0]
+        formatted_dataframe = self.remove_columns(dataframe)
+        return self.decision_algorithm.predict_outcome(formatted_dataframe)[0]
+
+    def remove_columns(self, dataframe):
+        return dataframe[self.attributes_test.columns]
 
     def predicted_outcome_available(self):
         return hasattr(self.decision_algorithm, "predict_outcome")
@@ -28,7 +32,9 @@ class DecisionAlgorithmAdapter:
                hasattr(self.decision_algorithm, "outcomes_distance")
 
     def get_individuals_distance(self, subject1, subject2):
-        return self.decision_algorithm.individuals_distance(subject1, subject2)
+        formatted_subject1 = self.remove_columns(subject1)
+        formatted_subject2 = self.remove_columns(subject2)
+        return self.decision_algorithm.individuals_distance(formatted_subject1, formatted_subject2)
 
     def get_outcomes_distance(self, outcome1, outcome2):
         return self.decision_algorithm.outcomes_distance(outcome1, outcome2)

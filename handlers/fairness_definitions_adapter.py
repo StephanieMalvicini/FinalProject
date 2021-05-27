@@ -43,7 +43,9 @@ def conditional_statistical_parity_aux(parameters, parameters_result):
                                                                 parameters["maximum_acceptable_difference"],
                                                                 parameters["positive_outcome"],
                                                                 parameters["negative_outcome"])
-        template = "P({}=1|L,{})".format(parameters_result.predicted_outcome_display_name(), "{}")
+        template = "P({}={}|L,{})".format(parameters_result.predicted_outcome_display_name(),
+                                          parameters["positive_outcome"],
+                                          "{}")
         single_result = Result(satisfies)
         parameters_result.add_legitimate_attributes(single_result, legitimate_attributes, proportions, template,
                                                     parameters["descriptions"])
@@ -71,7 +73,7 @@ def conditional_use_accuracy_equality_aux(parameters, parameters_result):
     npv_template = template.format(parameters["negative_outcome"],
                                    parameters["negative_outcome"], "{}")
     parameters_result.add_list(result, "PPV", ppv_values, ppv_template, parameters["descriptions"])
-    parameters_result.add_list(result, "FPR", npv_values, npv_template, parameters["descriptions"])
+    parameters_result.add_list(result, "NPV", npv_values, npv_template, parameters["descriptions"])
     return result
 
 

@@ -1,3 +1,4 @@
+import sys
 import tkinter as tk
 from tkinter import ttk
 
@@ -89,6 +90,7 @@ class FairnessDefinitionsCalculatorUI:
             updated = True
         if self.last_used_values.decision_algorithm_name != decision_algorithm_name or updated:
             training_data = dataset_handler.get_training_dataset()
+
             try:
                 decision_algorithm = decision_algorithm_creator.get(decision_algorithm_name, training_data)
                 updated = True
@@ -117,7 +119,9 @@ class FairnessDefinitionsCalculatorUI:
             if not self.calculator:
                 self.calculator = FairnessDefinitionsCalculator(self.dataset_handler, self.prediction_handler,
                                                                 *self.dataset_parameters.get_outcome_data())
-            self.calculator.update_parameters(descriptions, parameters_values)
+            positive_outcome, negative_outcome, _ = self.dataset_parameters.get_outcome_data()
+            self.calculator.update_parameters(descriptions, parameters_values,
+                                              positive_outcome, negative_outcome)
             result = self.calculator.calculate(selected_definitions_names)
             tables = self.calculator.get_positives_negatives_table()
             plots = Plots(self.dialog, descriptions, self.calculator.get_basic_metrics(), tables[0], tables[1])
@@ -126,8 +130,8 @@ class FairnessDefinitionsCalculatorUI:
             self.dialog.show_error(e.error_title, e.message)
         except InvalidDecisionAlgorithmParameters as e:
             self.dialog.show_error_with_details(e.message, e.original_error)
-        # except Exception:
-        #    self.dialog.show_error_with_details(UNEXPECTED_ERROR_TITLE, sys.exc_info())
+        except Exception:
+            self.dialog.show_error_with_details(UNEXPECTED_ERROR_TITLE, sys.exc_info())
 
     def destroy(self):
         self.frame.destroy()
