@@ -4,12 +4,12 @@ from tkinter import Toplevel, ttk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from user_interface.plots import COLORS
-from user_interface.tree_view import create_tree_view
 
 ERROR_TOTAL_WIDTH = 400
 ERROR_TOTAL_HEIGHT = 200
 SHOW_MORE = "Ver más"
 ERROR_TITLE = "Error"
+
 
 def show_error_detail(dialog, button, original_error):
     button.config(state="disabled")
