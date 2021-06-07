@@ -66,7 +66,8 @@ class Plots:
                                            figure,
                                            self.display_names.show_groups_descriptions,
                                            self.get_groups_descriptions(),
-                                           self.display_names.groups_descriptions)
+                                           self.display_names.groups_descriptions,
+                                           with_colors=True)
         plt.close("all")  # so the program can finish, otherwise, it continues executing if the dialog was opened
 
     def create_table_subplot(self, axis, table, table_title):

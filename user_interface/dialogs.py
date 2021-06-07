@@ -65,22 +65,27 @@ class CustomDialog:
         canvas.draw()
         canvas.get_tk_widget().pack(fill=tk.BOTH)
 
-    def show_plot_with_details(self, title, figure, button_name, details, details_title):
+    def show_plot_with_details(self, title, figure, button_name, details, details_title, with_colors=False):
         dialog = self.create_plot_dialog(title)
         button = ttk.Button(dialog, text=button_name,
-                            command=lambda: self.show_plot_details(details, details_title))
+                            command=lambda: self.show_plot_details(details, details_title, with_colors))
         button.pack(side=tk.BOTTOM, pady=10, ipady=3, ipadx=3)
         canvas = FigureCanvasTkAgg(figure, master=dialog)
         canvas.draw()
         canvas.get_tk_widget().pack(fill=tk.BOTH)
 
-    def show_plot_details(self, details, title):
+    def show_plot_details(self, details, title, with_colors):
         dialog = self.create_plot_dialog(title)
         dialog.config(bg=self.window["bg"])
         frame = ttk.Frame(dialog)
         frame.pack(padx=10, pady=10, anchor=tk.NW, fill=tk.BOTH)
-        for i, item in enumerate(details):
-            side_border = tk.Frame(frame, bg=COLORS[i % len(COLORS)])
-            side_border.pack(anchor=tk.W, padx=(1, 0))
-            label = tk.Label(side_border, text=str(item))
-            label.pack(anchor=tk.W, padx=(5, 0))
+        if with_colors:
+            for i, item in enumerate(details):
+                side_border = tk.Frame(frame, bg=COLORS[i % len(COLORS)])
+                side_border.pack(anchor=tk.W, padx=(1, 0))
+                label = tk.Label(side_border, text=str(item))
+                label.pack(anchor=tk.W, padx=(5, 0))
+        else:
+            for i, item in enumerate(details):
+                label = tk.Label(frame, text=str(item))
+                label.pack(anchor=tk.W, padx=(1, 0))
